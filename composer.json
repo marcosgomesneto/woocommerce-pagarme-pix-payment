@@ -1,0 +1,20 @@
+{
+    "name": "marcosgomesneto/wc-pagarme-pix-payment",
+    "description": "Receba pagamentos via PIX no WooCommerce com a Pagar-me de forma automática sem precisar de comprovantes de pagamento.",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0+",
+    "authors": [
+        {
+            "name": "Marcos Gomes Neto",
+            "email": "marcosgomesneto@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "WCPagarmePixPayment\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+	"version": "1.1.0"
+}
