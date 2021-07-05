@@ -9,7 +9,9 @@
             "email": "marcosgomesneto@gmail.com"
         }
     ],
-    "require": {},
+    "require": {
+        "chillerlan/php-qrcode": "^4.3"
+    },
     "autoload": {
         "psr-4": {
             "WCPagarmePixPayment\\": "src/"
