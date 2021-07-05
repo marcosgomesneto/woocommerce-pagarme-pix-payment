@@ -7,7 +7,7 @@
  * @package           WC_Pagarme_Pix_Payment
  *
  * @wordpress-plugin
- * Plugin Name:       WooCommerce Pagarme Pix Payment
+ * Plugin Name:       WC Pagarme Pix Payment
  * Plugin URI:        https://github.com/marcosgomesneto/woocommerce-pagarme-pix-payment
  * Description:       Receba pagamentos via PIX no WooCommerce com a Pagar-me de forma automática sem precisar de comprovantes de pagamento.
  * Version:           1.0.0
