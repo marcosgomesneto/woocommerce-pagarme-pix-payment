@@ -1,7 +1,7 @@
-=== WooCommerce Pagarme Pix Payment (para Woocommerce) ===
+=== Pix Automático com Pagarme para WooCommerce ===
 
 Contributors: marcosgomesneto
-Tags: woocommerce, automatico, payment, pix, e-commerce, shop, ecommerce, pagamento
+Tags: woocommerce, automatico, payment, pix, e-commerce, shop, ecommerce, pagamento, pagarme, method
 Requires at least: 4.0
 Requires PHP: 7.2
 Tested up to: 5.7.1
@@ -10,7 +10,7 @@ License: GPLv2 or later
 Language: pt_BR 
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-== Woocommerce Pagarme PIX Payment ==
+== Pagamentos Pix com Pagarme para WooCommerce ==
 
 A Pagar.me disponibiliza a opção de PIX, para que o pagamento seja compensado automaticamente sem seu cliente precisar enviar comprovantes de pagamento.
 

@@ -1,4 +1,4 @@
-# Woocommerce Pagarme PIX Payment #
+# Pix Automático com Pagarme para WooCommerce #
 
 A Pagar.me disponibiliza a opção de PIX, para que o pagamento seja compensado automaticamente sem seu cliente precisar enviar comprovantes de pagamento.
 
