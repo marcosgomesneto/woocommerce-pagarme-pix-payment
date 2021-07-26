@@ -128,11 +128,10 @@ class PagarmeApi {
 	 * Generate the transaction data.
 	 *
 	 * @param  WC_Order $order  Order data.
-	 * @param  array    $posted Form posted data.
 	 *
 	 * @return array            Transaction data.
 	 */
-	public function generate_transaction_data( $order, $posted ) {
+	public function generate_transaction_data( $order ) {
 		// Set the request data.
 		$data = array(
 			'api_key'      			=> $this->gateway->api_key,
@@ -230,7 +229,7 @@ class PagarmeApi {
 			$this->gateway->log->add( $this->gateway->id, 'API PagarmePix: Init process payment' );
 		}
 
-		$data        = $this->generate_transaction_data( $order, $_POST );
+		$data        = $this->generate_transaction_data( $order );
 		$transaction = $this->do_transaction( $order, $data );
 
 		if ( isset( $transaction['errors'] ) ) {

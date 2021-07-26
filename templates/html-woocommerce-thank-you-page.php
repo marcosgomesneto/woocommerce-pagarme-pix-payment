@@ -160,6 +160,6 @@ if( $order ){
         <!--<h5 class="mt-4">Código:</h5>
         <div><?php echo $qr_code; ?></div>-->
         <div><input type="hidden" value="<?php echo $qr_code; ?>" id="pixQrCodeInput"></div>
-        <input type="hidden" name="wc_pagarme_pix_order_key" value="<?php echo $_GET['key']; ?>"/>
+        <input type="hidden" name="wc_pagarme_pix_order_key" value="<?php echo esc_html( sanitize_text_field( $_GET['key'] ) ); ?>"/>
     </div>
 </div>
