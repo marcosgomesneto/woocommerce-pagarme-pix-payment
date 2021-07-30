@@ -155,11 +155,11 @@ if( $order ){
         <button class="btn btn-primary copy-qr-code"><i class="fa fa-copy fa-lg pr-3"></i>Clique aqui para copiar o código</button>
         <p class="text-success mt-4 qrcode-copyed" style="display: none;">Código copiado com sucesso!<br>Vá até o aplicativo do seu banco e cole o código.</p>
         <div>
-            <img src="<?php echo (new QRCode)->render($qr_code); ?>" />
+            <img src="<?php echo (new QRCode)->render( esc_html($qr_code) ); ?>" />
         </div>
         <!--<h5 class="mt-4">Código:</h5>
-        <div><?php echo $qr_code; ?></div>-->
-        <div><input type="hidden" value="<?php echo $qr_code; ?>" id="pixQrCodeInput"></div>
+        <div><?php echo esc_html($qr_code); ?></div>-->
+        <div><input type="hidden" value="<?php echo esc_html($qr_code); ?>" id="pixQrCodeInput"></div>
         <input type="hidden" name="wc_pagarme_pix_order_key" value="<?php echo esc_html( sanitize_text_field( $_GET['key'] ) ); ?>"/>
     </div>
 </div>
