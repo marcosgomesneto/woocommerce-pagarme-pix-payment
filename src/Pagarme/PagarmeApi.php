@@ -369,9 +369,4 @@ class PagarmeApi {
 	protected function only_numbers( $string ) {
 		return preg_replace( '([^0-9])', '', $string );
 	}
-
-	public function test() {
-		//echo WC()->api_request_url( $this->gateway->id );
-		//https://muscleboss.grupointermed.com.br/wc-api/wc_pagarme_pix_payment_geteway/
-	}
 }
