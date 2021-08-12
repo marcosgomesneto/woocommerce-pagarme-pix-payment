@@ -1,10 +1,10 @@
 === Pix Automático com Pagarme para WooCommerce ===
 
-Contributors: marcosgomesneto
+Contributors: marcosgn
 Tags: woocommerce, automatico, payment, pix, e-commerce, shop, ecommerce, pagamento, pagarme, method
 Requires at least: 4.0
 Requires PHP: 7.2
-Tested up to: 5.7.1
+Tested up to: 5.8
 Stable tag: 1.0.0
 License: GPLv2 or later
 Language: pt_BR 
