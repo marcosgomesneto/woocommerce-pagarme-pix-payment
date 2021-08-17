@@ -104,7 +104,6 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 	 * Admin page.
 	 */
 	public function admin_options() {
-		$this->api->test();
 		include WC_PAGARME_PIX_PAYMENT_PLUGIN_PATH . '/templates/admin/settings/general-settings.php';
 	}
 
