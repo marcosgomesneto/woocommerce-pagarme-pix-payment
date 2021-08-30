@@ -31,7 +31,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		//Main settings
 		$this->setup_settings();
 
-		//$this->icon = apply_filters( 'woocommerce_gateway_icon', WC_PIGGLY_PIX_PLUGIN_URL.'assets/'.$this->select_icon.'.png' );
+		//$this->icon = apply_filters( 'woocommerce_gateway_icon', WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME.'assets/'.$this->select_icon.'.png' );
 
 		// Set the API.
 		$this->api = new PagarmeApi( $this );
@@ -59,7 +59,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 			'api_key' => array(
 				'title'             => __( 'Pagar.me API Key', 'wc-pagarme-pix-payment' ),
 				'type'              => 'text',
-				'description'       => sprintf( __( 'Please enter your Pagar.me API Key. This is needed to process the payment and notifications. Is possible get your API Key in %s.', 'wc-pagarme-pix-payment' ), '<a href="https://dashboard.pagar.me/">' . __( 'Pagar.me Dashboard > My Account page', 'wc-pagarme-pix-payment' ) . '</a>' ),
+				'description'       => sprintf( __( 'Insira a Pagar.me API Key. Caso você não saiba você pode obter em %s.', 'wc-pagarme-pix-payment' ), '<a href="https://dashboard.pagar.me/">' . __( 'Pagar.me Dashboard > My Account page', 'wc-pagarme-pix-payment' ) . '</a>' ),
 				'default'           => '',
 				'custom_attributes' => array(
 					'required' => 'required',
@@ -68,7 +68,16 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 			'encryption_key' => array(
 				'title'             => __( 'Pagar.me Encryption Key', 'wc-pagarme-pix-payment' ),
 				'type'              => 'text',
-				'description'       => sprintf( __( 'Please enter your Pagar.me Encryption key. This is needed to process the payment. Is possible get your Encryption Key in %s.', 'wc-pagarme-pix-payment' ), '<a href="https://dashboard.pagar.me/">' . __( 'Pagar.me Dashboard > My Account page', 'wc-pagarme-pix-payment' ) . '</a>' ),
+				'description'       => sprintf( __( 'Insira a Pagar.me Encryption key. Caso você não saiba você pode obter em %s.', 'wc-pagarme-pix-payment' ), '<a href="https://dashboard.pagar.me/">' . __( 'Pagar.me Dashboard > My Account page', 'wc-pagarme-pix-payment' ) . '</a>' ),
+				'default'           => '',
+				'custom_attributes' => array(
+					'required' => 'required',
+				),
+			),
+			'checkout_message' => array(
+				'title'             => __( 'Mensagem nas opções de pagamento', 'wc-pagarme-pix-payment' ),
+				'type'              => 'textarea',
+				'description'       => sprintf( __( 'Quando é selecionado o PIX como forma de pagamento no finalizar compra', 'wc-pagarme-pix-payment' ) ),
 				'default'           => '',
 				'custom_attributes' => array(
 					'required' => 'required',
@@ -139,7 +148,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		// Mark as on-hold (we're awaiting the payment)
 		$order->update_status( 
 			str_replace('wc-', '', $this->order_status), 
-			__( 'Aguardando pagamento via Pix', \WC_PIGGLY_PIX_PLUGIN_NAME ) 
+			__( 'Aguardando pagamento via Pix', \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME ) 
 		);
  
 		// Remove cart

@@ -86,23 +86,6 @@ class Core {
     }
 
 	/**
-	 * Create submenu to pix receipts at Woocommerce menu.
-	 * 
-	 * @since 1.1.0
-	 * @return string
-	 */
-	public function create_menu () {
-		add_submenu_page(
-			'woocommerce',
-			__('Comprovantes Pix - Pix por Piggly', \WC_PIGGLY_PIX_PLUGIN_NAME),
-			__('Comprovantes Pix', \WC_PIGGLY_PIX_PLUGIN_NAME),
-			'manage_woocommerce',
-			\WC_PIGGLY_PIX_PLUGIN_NAME,
-			[$this, 'page']
-		);
-	}
-
-	/**
 	 * Plugin loaded method.
 	 * 
 	 * @since 1.1.0
@@ -113,7 +96,6 @@ class Core {
 		if ( !class_exists('WC_Payment_Gateway') )
 		{
 			// Cannot start plugin
-			//add_action( 'admin_notices', 'wc_piggly_pix_missing_notice' );
 			return;
 		}
 

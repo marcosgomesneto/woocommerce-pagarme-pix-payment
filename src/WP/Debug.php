@@ -1,5 +1,5 @@
 <?php
-namespace Piggly\WC\Pix\WP;
+namespace WCPagarmePixPayment\WC\Pix\WP;
 
 use WC_Logger;
 
@@ -8,11 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 /**
  * Create a log when debugging plugin.
  *
- * @since      1.2.0 
- * @package    Piggly\WC\Pix
- * @subpackage Piggly\WC\Pix\WP
- * @author     Caique <caique@piggly.com.br>
- * @author     Piggly Lab <dev@piggly.com.br>
+ * @since      1.0.0
  */
 class Debug
 {
@@ -99,7 +95,7 @@ class Debug
 		$instance = self::getInstance();
 		$logger = $instance->getLogger();
 		
-		$context = array_merge(array( 'source' => \WC_PIGGLY_PIX_PLUGIN_NAME ), $context);
+		$context = array_merge(array( 'source' => \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME ), $context);
 		if ( !is_null($logger) ) $logger->info($message, $context);
 	}
 
@@ -116,7 +112,7 @@ class Debug
 		$instance = self::getInstance();
 		$logger = $instance->getLogger();
 		
-		$context = array_merge(array( 'source' => \WC_PIGGLY_PIX_PLUGIN_NAME ), $context);
+		$context = array_merge(array( 'source' => \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME ), $context);
 		if ( !is_null($logger) ) $logger->error($message, $context);
 	}
 
@@ -133,7 +129,7 @@ class Debug
 		$instance = self::getInstance();
 		$logger = $instance->getLogger();
 		
-		$context = array_merge(array( 'source' => \WC_PIGGLY_PIX_PLUGIN_NAME ), $context);
+		$context = array_merge(array( 'source' => \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME ), $context);
 		if ( !is_null($logger) ) $logger->debug($message, $context);
 	}
 

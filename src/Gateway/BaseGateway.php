@@ -69,11 +69,11 @@ class BaseGateway
 	{
 		$pluginLinks = array();
 
-		$baseUrl = esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_piggly_pix_gateway' ) );
+		$baseUrl = esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_pagarme_pix_payment' ) );
 
-		$pluginLinks[] = sprintf('<a href="%s">%s</a>', $baseUrl, __('Configurações', \WC_PIGGLY_PIX_PLUGIN_NAME));
-		$pluginLinks[] = sprintf('<a href="%s&screen=support">%s</a>', $baseUrl, __('Suporte', \WC_PIGGLY_PIX_PLUGIN_NAME));
-		$pluginLinks[] = sprintf('<a href="%s">%s</a>', 'https://wordpress.org/plugins/pix-por-piggly/#reviews', __('Avalie o Plugin!', \WC_PIGGLY_PIX_PLUGIN_NAME));
+		$pluginLinks[] = sprintf('<a href="%s">%s</a>', $baseUrl, __('Configurações', \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME));
+		$pluginLinks[] = sprintf('<a href="%s&screen=support">%s</a>', $baseUrl, __('Suporte', \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME));
+		$pluginLinks[] = sprintf('<a href="%s">%s</a>', 'https://wordpress.org/plugins/wc-pagarme-pix-payment/#reviews', __('Avalie o Plugin!', \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME));
 
 		return array_merge( $pluginLinks, $links );
 	}
