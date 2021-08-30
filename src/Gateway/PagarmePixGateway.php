@@ -77,8 +77,26 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 			'checkout_message' => array(
 				'title'             => __( 'Mensagem nas opções de pagamento', 'wc-pagarme-pix-payment' ),
 				'type'              => 'textarea',
-				'description'       => sprintf( __( 'Quando é selecionado o PIX como forma de pagamento no finalizar compra', 'wc-pagarme-pix-payment' ) ),
-				'default'           => '',
+				'description'       => sprintf( __( 'Quando é selecionado o PIX como forma de pagamento antes de finalizar a compra.', 'wc-pagarme-pix-payment' ) ),
+				'default'           => "Ao finalizar a compra, iremos gerar o código Pix para pagamento.\r\n\r\nNosso sistema detecta automaticamente o pagamento sem precisar enviar comprovantes.",
+				'custom_attributes' => array(
+					'required' => 'required',
+				),
+			),
+			'order_recived_message' => array(
+				'title'             => __( 'Mensagem na tela do QR Code', 'wc-pagarme-pix-payment' ),
+				'type'              => 'textarea',
+				'description'       => sprintf( __( 'Essa mensagem aparece após concluir a compra, na tela para pagamento PIX.', 'wc-pagarme-pix-payment' ) ),
+				'default'           => "Escaneie o código QR ou copie o código abaixo para fazer o PIX.\r\nO sistema vai detectar automáticamente quando fizer a transferência.",
+				'custom_attributes' => array(
+					'required' => 'required',
+				),
+			),
+			'thank_you_message' => array(
+				'title'             => __( 'Mensagem de agradecimento pelo pagamento', 'wc-pagarme-pix-payment' ),
+				'type'              => 'textarea',
+				'description'       => sprintf( __( 'Essa mensagem aparece quando o pagamento PIX é confirmado automáticamente.', 'wc-pagarme-pix-payment' ) ),
+				'default'           => "Sua transferência PIX foi confirmada!\r\nO seu pedido já está sendo separado e logo será enviado para seu endereço.",
 				'custom_attributes' => array(
 					'required' => 'required',
 				),
@@ -86,9 +104,9 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 			'debug' => array(
 				'title'       => __( 'Debug Log', 'wc-pagarme-pix-payment' ),
 				'type'        => 'checkbox',
-				'label'       => __( 'Enable logging', 'wc-pagarme-pix-payment' ),
+				'label'       => __( 'Ativar logs', 'wc-pagarme-pix-payment' ),
 				'default'     => 'no',
-				'description' => sprintf( __( 'Log Pagar.me events, such as API requests. You can check the log in %s', 'wc-pagarme-pix-payment' ), '<a href="' . esc_url( admin_url( 'admin.php?page=wc-status&tab=logs&log_file=' . esc_attr( $this->id ) . '-' . sanitize_file_name( wp_hash( $this->id ) ) . '.log' ) ) . '">' . __( 'System Status &gt; Logs', 'wc-pagarme-pix-payment' ) . '</a>' ),
+				'description' => sprintf( __( 'Veja os logs do plugin e mensagens de depuração em %s', 'wc-pagarme-pix-payment' ), '<a href="' . esc_url( admin_url( 'admin.php?page=wc-status&tab=logs&log_file=' . esc_attr( $this->id ) . '-' . sanitize_file_name( wp_hash( $this->id ) ) . '.log' ) ) . '">' . __( 'System Status &gt; Logs', 'wc-pagarme-pix-payment' ) . '</a>' ),
 			)
 		);
 	}
@@ -107,6 +125,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		$this->async          = $this->get_option( 'async' );
 		$this->api_key        = $this->get_option( 'api_key' );
 		$this->encryption_key = $this->get_option( 'encryption_key' );
+		$this->checkout_message = $this->get_option( 'checkout_message' );
 	}
 
 	/**
@@ -126,7 +145,10 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 
 		wc_get_template(
 			'html-woocommerce-instructions.php',
-			['description' => $this->get_description()],
+			[
+				'description' => $this->get_description(),
+				'checkout_message' => $this->checkout_message
+			],
 			WC()->template_path().\WC_PAGARME_PIX_PAYMENT_DIR_NAME.'/',
 			WC_PAGARME_PIX_PAYMENT_PLUGIN_PATH.'templates/'
 		);
