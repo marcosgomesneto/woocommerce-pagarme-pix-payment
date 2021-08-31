@@ -29,7 +29,7 @@ class BaseGateway
 		$base = new self();
 
 		WP::add_filter('woocommerce_payment_gateways', $base, 'add_gateway');
-		WP::add_filter('plugin_action_links_'.\WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME, $base, 'plugin_action_links');
+		WP::add_filter('plugin_action_links_'.\WC_PAGARME_PIX_PAYMENT_BASE_NAME, $base, 'plugin_action_links');
 		WP::add_action('wp_ajax_wc_pagarme_pix_payment_check', $base, 'check_pix_payment');
 		WP::add_action('wp_ajax_nopriv_wc_pagarme_pix_payment_check', $base, 'check_pix_payment');
 	}
@@ -69,11 +69,11 @@ class BaseGateway
 	{
 		$pluginLinks = array();
 
-		$baseUrl = esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_pagarme_pix_payment' ) );
+		$baseUrl = esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_pagarme_pix_payment_geteway' ) );
 
 		$pluginLinks[] = sprintf('<a href="%s">%s</a>', $baseUrl, __('Configurações', \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME));
-		$pluginLinks[] = sprintf('<a href="%s&screen=support">%s</a>', $baseUrl, __('Suporte', \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME));
-		$pluginLinks[] = sprintf('<a href="%s">%s</a>', 'https://wordpress.org/plugins/wc-pagarme-pix-payment/#reviews', __('Avalie o Plugin!', \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME));
+		$pluginLinks[] = sprintf('<a href="%s" target="_blank">%s</a>', 'https://wordpress.org/support/plugin/wc-pagarme-pix-payment/', __('Suporte', \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME));
+		$pluginLinks[] = sprintf('<a href="%s" target="_blank">%s</a>', 'https://wordpress.org/plugins/wc-pagarme-pix-payment/#reviews', __('Avalie o Plugin	', \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME));
 
 		return array_merge( $pluginLinks, $links );
 	}

@@ -1,10 +1,9 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 ?>
-<h1>Pix via Pagarme</h1>
-
-<?php echo wp_kses_post( wpautop( $this->method_description ) ); ?>
-
+<h2><?php echo esc_html($current_tab_name); ?></h2>
 <table class="form-table">
-	<?php $this->generate_settings_html(); ?>
+	<?php 
+		$this->generate_settings_html(); 
+	?>
 </table>

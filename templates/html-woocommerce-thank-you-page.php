@@ -149,9 +149,7 @@ if( $order ){
         <p>Sua transferência PIX foi confirmada!<br>O seu pedido já está sendo separado e logo será enviado para seu endereço.</p>
     </div>
     <div id="watingPixPaymentBox" style="display: <?php echo $paid ? 'none' : 'block'; ?>;">
-        <h4>Faça o pagamento para finalizar!</h4>
-        <p>Escaneie o código QR ou copie o código abaixo para fazer o PIX.<br> O sistema vai detectar automáticamente quando fizer a transferência.</p>
-        <p><strong>Podemos demorar até 5 minutos para<br> detectarmos o pagamento.</strong></p>
+        <?php echo $order_recived_message; ?>
         <button class="btn btn-primary copy-qr-code"><i class="fa fa-copy fa-lg pr-3"></i>Clique aqui para copiar o código</button>
         <p class="text-success mt-4 qrcode-copyed" style="display: none;">Código copiado com sucesso!<br>Vá até o aplicativo do seu banco e cole o código.</p>
         <div>

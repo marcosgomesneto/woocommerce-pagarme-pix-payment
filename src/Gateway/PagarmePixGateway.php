@@ -4,6 +4,7 @@ namespace WCPagarmePixPayment\Gateway;
 use WC_Payment_Gateway;
 use WC_Logger;
 use WCPagarmePixPayment\Pagarme\PagarmeApi;
+use WC_Admin_Settings;
 
 /**
  * Pix GeteWay class
@@ -14,7 +15,8 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 	 * Constructor for the gateway.
 	 */
 	public function __construct() {
-        
+        global $current_section;
+
 		$this->id                   = 'wc_pagarme_pix_payment_geteway';
 		$this->icon                 = false;
 		$this->has_fields           = true;
@@ -42,10 +44,42 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		}
 
 		// Actions.
-		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+		//add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 		add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ) );
 		//add_action( 'woocommerce_email_after_order_table', array( $this, 'email_instructions' ), 10, 3 );
 		add_action( 'woocommerce_api_' . $this->id, array( $this, 'ipn_handler' ) );
+	}
+
+	/**
+	 * Update admin options
+	 * 
+	 * @since 1.1.0
+	 * @return void
+	 */
+	public function process_admin_options(){
+		$current_tab = $this->get_current_tab();
+		$update_settings = get_option($this->get_option_key(), []);
+
+		if( !is_array($update_settings) )
+			$update_settings = [];
+
+		switch( $current_tab ){
+			case 'customize':
+				$checkout_message 		= filter_input( INPUT_POST, $this->get_field_name('checkout_message'), FILTER_SANITIZE_STRING );
+				$order_recived_message 	= filter_input( INPUT_POST, $this->get_field_name('order_recived_message'), FILTER_SANITIZE_STRING );
+				$thank_you_message 		= filter_input( INPUT_POST, $this->get_field_name('thank_you_message'), FILTER_SANITIZE_STRING );
+
+				if( empty($checkout_message) || empty($order_recived_message) || empty($thank_you_message) ){
+					WC_Admin_Settings::add_error( __('É preciso preencher a todos os campos', \WC_PAGARME_PIX_PAYMENT_DIR_NAME) ); 
+				}
+				
+				$update_settings['checkout_message'] 		= $checkout_message;
+				$update_settings['order_recived_message'] 	= $order_recived_message;
+				$update_settings['thank_you_message'] 		= $thank_you_message;		
+			break;
+		}
+		
+		return update_option( $this->get_option_key(), apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $update_settings ), 'yes' );
 	}
 
 	/**
@@ -74,33 +108,6 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 					'required' => 'required',
 				),
 			),
-			'checkout_message' => array(
-				'title'             => __( 'Mensagem nas opções de pagamento', 'wc-pagarme-pix-payment' ),
-				'type'              => 'textarea',
-				'description'       => sprintf( __( 'Quando é selecionado o PIX como forma de pagamento antes de finalizar a compra.', 'wc-pagarme-pix-payment' ) ),
-				'default'           => "Ao finalizar a compra, iremos gerar o código Pix para pagamento.\r\n\r\nNosso sistema detecta automaticamente o pagamento sem precisar enviar comprovantes.",
-				'custom_attributes' => array(
-					'required' => 'required',
-				),
-			),
-			'order_recived_message' => array(
-				'title'             => __( 'Mensagem na tela do QR Code', 'wc-pagarme-pix-payment' ),
-				'type'              => 'textarea',
-				'description'       => sprintf( __( 'Essa mensagem aparece após concluir a compra, na tela para pagamento PIX.', 'wc-pagarme-pix-payment' ) ),
-				'default'           => "Escaneie o código QR ou copie o código abaixo para fazer o PIX.\r\nO sistema vai detectar automáticamente quando fizer a transferência.",
-				'custom_attributes' => array(
-					'required' => 'required',
-				),
-			),
-			'thank_you_message' => array(
-				'title'             => __( 'Mensagem de agradecimento pelo pagamento', 'wc-pagarme-pix-payment' ),
-				'type'              => 'textarea',
-				'description'       => sprintf( __( 'Essa mensagem aparece quando o pagamento PIX é confirmado automáticamente.', 'wc-pagarme-pix-payment' ) ),
-				'default'           => "Sua transferência PIX foi confirmada!\r\nO seu pedido já está sendo separado e logo será enviado para seu endereço.",
-				'custom_attributes' => array(
-					'required' => 'required',
-				),
-			),
 			'debug' => array(
 				'title'       => __( 'Debug Log', 'wc-pagarme-pix-payment' ),
 				'type'        => 'checkbox',
@@ -119,20 +126,84 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 	 */
 	public function setup_settings() {
 		// Define user set variables.
-		$this->title          = $this->get_option( 'title', 'Pix Instantâneo' );
-		$this->description    = $this->get_option( 'description' );
-		$this->debug          = $this->get_option( 'debug' );
-		$this->async          = $this->get_option( 'async' );
-		$this->api_key        = $this->get_option( 'api_key' );
-		$this->encryption_key = $this->get_option( 'encryption_key' );
-		$this->checkout_message = $this->get_option( 'checkout_message' );
+		$this->title          			= $this->get_option( 'title', 'Pix Instantâneo' );
+		$this->description    			= $this->get_option( 'description' );
+		$this->debug          			= $this->get_option( 'debug' );
+		$this->async          			= $this->get_option( 'async' );
+		$this->api_key        			= $this->get_option( 'api_key' );
+		$this->encryption_key 			= $this->get_option( 'encryption_key' );
+		$this->checkout_message 		= $this->get_option( 'checkout_message' );
+		$this->order_recived_message 	= $this->get_option( 'order_recived_message' );
+		$this->thank_you_message 		= $this->get_option( 'thank_you_message' );
 	}
 
 	/**
-	 * Admin page.
+	 * Get name of fields
+	 * 
+	 * @since 1.1.0
+	 * @return string
+	 */
+	protected function get_field_name ( string $field = '' )
+	{ 
+		return $this->id . '_' . $field;	
+	}
+
+	/**
+	 * Get current tab
+	 * 
+	 * @since 1.1.0
+	 * @return string
+	 */
+	protected function get_current_tab()
+	{ 
+		$current_tab = filter_input( INPUT_GET, 'mgn_tab', FILTER_SANITIZE_STRING );
+		$current_tab = isset( $current_tab ) ? $current_tab : 'general';
+
+		return $current_tab;
+	}
+
+	/**
+	 * Get current tab name
+	 * 
+	 * @since 1.1.0
+	 * @return string
+	 */
+	protected function get_current_tab_name()
+	{ 
+		$tabs = $this->get_tabs();
+		
+		return $tabs[$this->get_current_tab()];
+	}
+
+	/**
+	 * Tabs
+	 * 
+	 * @since 1.1.0
+	 * @return string
+	 */
+	protected function get_tabs()
+	{ 
+		return [
+			'general' => __( 'Geral', 'wc-pagarme-pix-payment' ),
+			'customize' => __( 'Customizar', 'wc-pagarme-pix-payment' ),
+		];
+	}
+
+	/**
+	 * Admin page settings.
 	 */
 	public function admin_options() {
-		include WC_PAGARME_PIX_PAYMENT_PLUGIN_PATH . '/templates/admin/settings/general-settings.php';
+		$baseUrl  = admin_url( 'admin.php?page=wc-settings&tab=checkout&section=' . $this->id );
+		
+		$current_tab = $this->get_current_tab();
+		$current_tab_name = $this->get_current_tab_name();		
+
+		$tab_template = \WC_PAGARME_PIX_PAYMENT_PLUGIN_PATH . 'templates/admin/settings/' . $current_tab . '-settings.php';
+		
+		require_once(\WC_PAGARME_PIX_PAYMENT_PLUGIN_PATH . 'templates/admin/settings/header-settings.php');
+
+		if( file_exists($tab_template) )
+			require_once($tab_template);
 	}
 
 	/**
@@ -162,28 +233,6 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 	 * @return array Redirect data.
 	 */
 	public function process_payment( $order_id ) {
-		/*global $woocommerce;
-
-		// Load order
-		$order = new WC_Order( $order_id );
-		
-		// Mark as on-hold (we're awaiting the payment)
-		$order->update_status( 
-			str_replace('wc-', '', $this->order_status), 
-			__( 'Aguardando pagamento via Pix', \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME ) 
-		);
- 
-		// Remove cart
-		$woocommerce->cart->empty_cart();
-
-		Debug::info(sprintf('Pagamento realizado via Pix para o pedido %s.', $order_id));
-
-		do_action('wpgly_pix_after_process_payment', $order->get_id(), $order);		
-		// Return thank-you redirect
-		return array(
-			'result' 	=> 'success',
-			'redirect'	=> $this->get_return_url( $order )
-		);*/
 		return $this->api->process_regular_payment( $order_id );
 	}
 
@@ -199,7 +248,9 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		wc_get_template(
 			'html-woocommerce-thank-you-page.php',
 			[
-				'qr_code' => $qr_code
+				'qr_code' => $qr_code,
+				'thank_you_message' => $this->thank_you_message,
+				'order_recived_message' => $this->order_recived_message
 			],
 			WC()->template_path().\WC_PAGARME_PIX_PAYMENT_DIR_NAME . '/',
 			WC_PAGARME_PIX_PAYMENT_PLUGIN_PATH . 'templates/'

@@ -29,6 +29,7 @@ define( 'WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME', 'wc-pagarme-pix-payment' );
 define( 'WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION', '1.1.0' );
 define( 'WC_PAGARME_PIX_PAYMENT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'WC_PAGARME_PIX_PAYMENT_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
+define( 'WC_PAGARME_PIX_PAYMENT_BASE_NAME', plugin_basename( __FILE__ ) );
 define( 'WC_PAGARME_PIX_PAYMENT_DIR_NAME', dirname(plugin_basename( __FILE__ )) );
 
 require WC_PAGARME_PIX_PAYMENT_PLUGIN_PATH . 'vendor/autoload.php';

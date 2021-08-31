@@ -1,6 +1,5 @@
 <?php
 defined( 'ABSPATH' ) || exit;
+
+echo nl2br(esc_html( $checkout_message ));
 ?>
-Ao finalizar a compra, iremos gerar o código Pix para pagamento.
-<br><br>
-Nosso sistema detecta automaticamente o pagamento sem precisar enviar comprovantes.

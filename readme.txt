@@ -22,6 +22,15 @@ Para ter a opção Pix liberada na dashboard da Pagar.me também é preciso soli
 
 Compativel com a última versão do Woocommerce.
 
+== 1.1.0 ==
+
+* Customização de textos nas mensagens na tela de pagamento
+* Otimização do código
+
+== 1.0.1 ==
+
+* Correção de BUGs
+
 == 1.0.0 ==
 
 * Versão inicial do plugin.
