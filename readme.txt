@@ -12,11 +12,11 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Pagamentos Pix com Pagarme para WooCommerce ==
 
-O Plugin gera um QR code para pagamento PIX na finalização da compra. O cliente pode clicar no botão "Copiar Código" e então é só ele ir no aplicativo do banco, entrar na opção "PIX Copia e Cola" e fazer o pagamento.
+O Plugin gera um QR code para pagamento PIX na finalização da compra. O cliente só precisa clicar no botão "Copiar Código" e então ir no aplicativo do banco, entrar na opção "PIX Copia e Cola" e fazer o pagamento.
 
 Quando ele terminar de pagar e voltar para o site, o plugin recebe a confirmação de pagamento e automaticamente uma animação é mostrada com a mensagem de "Pagamento Confirmado".
 
-O pedido é alterado para processando automáticamente.
+O pedido é alterado para processando automaticamente.
 
 Não é preciso pedir comprovantes para o cliente pois o pagamento é confirmado direto pela API da Pagarme com o Plugin.
 
