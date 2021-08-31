@@ -10,7 +10,7 @@
  * Plugin Name:       		Pix Automático com Pagarme para WooCommerce
  * Plugin URI:        		https://github.com/marcosgomesneto/woocommerce-pagarme-pix-payment
  * Description:       		Receba pagamentos via PIX no WooCommerce com a Pagar-me de forma automática sem precisar de comprovantes de pagamento.
- * Version:           		1.0.1
+ * Version:           		1.1.0
  * Requires at least: 		5.2
  * Requires PHP:      		7.4
  * WC requires at least:	3.0
