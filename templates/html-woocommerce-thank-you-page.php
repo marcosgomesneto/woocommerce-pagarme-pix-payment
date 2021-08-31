@@ -146,10 +146,10 @@ if( $order ){
             <circle id="successAnimationCircle" cx="35" cy="35" r="24" stroke="#979797" stroke-width="2" stroke-linecap="round" fill="transparent"/>
             <polyline id="successAnimationCheck" stroke="#979797" stroke-width="2" points="23 34 34 43 47 27" fill="transparent"/>
         </svg>
-        <p>Sua transferência PIX foi confirmada!<br>O seu pedido já está sendo separado e logo será enviado para seu endereço.</p>
+        <?php echo nl2br($thank_you_message); ?>
     </div>
     <div id="watingPixPaymentBox" style="display: <?php echo $paid ? 'none' : 'block'; ?>;">
-        <?php echo $order_recived_message; ?>
+        <?php echo nl2br($order_recived_message); ?>
         <button class="btn btn-primary copy-qr-code"><i class="fa fa-copy fa-lg pr-3"></i>Clique aqui para copiar o código</button>
         <p class="text-success mt-4 qrcode-copyed" style="display: none;">Código copiado com sucesso!<br>Vá até o aplicativo do seu banco e cole o código.</p>
         <div>

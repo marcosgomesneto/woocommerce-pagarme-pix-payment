@@ -44,7 +44,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		}
 
 		// Actions.
-		//add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 		add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ) );
 		//add_action( 'woocommerce_email_after_order_table', array( $this, 'email_instructions' ), 10, 3 );
 		add_action( 'woocommerce_api_' . $this->id, array( $this, 'ipn_handler' ) );
@@ -64,13 +64,26 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 			$update_settings = [];
 
 		switch( $current_tab ){
+			case 'general':
+				$api_key 		= filter_input( INPUT_POST, $this->get_field_name('api_key'), FILTER_SANITIZE_STRING );
+				$encryption_key	= filter_input( INPUT_POST, $this->get_field_name('encryption_key'), FILTER_SANITIZE_STRING );
+				$debug			= filter_input( INPUT_POST, $this->get_field_name('debug'), FILTER_SANITIZE_STRING );
+
+				if( empty($api_key) || empty($encryption_key) ){
+					WC_Admin_Settings::add_error( __('É preciso preencher a todos os campos', \WC_PAGARME_PIX_PAYMENT_DIR_NAME) ); 
+				}
+				
+				$update_settings['api_key'] 		= $api_key;
+				$update_settings['encryption_key'] 	= $encryption_key;
+				$update_settings['debug'] 			= isset($debug) ? 'yes' : 'no';
+			break;
 			case 'customize':
 				$checkout_message 		= filter_input( INPUT_POST, $this->get_field_name('checkout_message'), FILTER_SANITIZE_STRING );
-				$order_recived_message 	= filter_input( INPUT_POST, $this->get_field_name('order_recived_message'), FILTER_SANITIZE_STRING );
-				$thank_you_message 		= filter_input( INPUT_POST, $this->get_field_name('thank_you_message'), FILTER_SANITIZE_STRING );
+				$order_recived_message 	= filter_input( INPUT_POST, $this->get_field_name('order_recived_message') );
+				$thank_you_message 		= filter_input( INPUT_POST, $this->get_field_name('thank_you_message') );
 
 				if( empty($checkout_message) || empty($order_recived_message) || empty($thank_you_message) ){
-					WC_Admin_Settings::add_error( __('É preciso preencher a todos os campos', \WC_PAGARME_PIX_PAYMENT_DIR_NAME) ); 
+					//WC_Admin_Settings::add_error( __('É preciso preencher a todos os campos', \WC_PAGARME_PIX_PAYMENT_DIR_NAME) ); 
 				}
 				
 				$update_settings['checkout_message'] 		= $checkout_message;
@@ -132,9 +145,9 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		$this->async          			= $this->get_option( 'async' );
 		$this->api_key        			= $this->get_option( 'api_key' );
 		$this->encryption_key 			= $this->get_option( 'encryption_key' );
-		$this->checkout_message 		= $this->get_option( 'checkout_message' );
-		$this->order_recived_message 	= $this->get_option( 'order_recived_message' );
-		$this->thank_you_message 		= $this->get_option( 'thank_you_message' );
+		$this->checkout_message 		= $this->get_option( 'checkout_message', "Ao finalizar a compra, iremos gerar o código Pix para pagamento.\r\n\r\nNosso sistema detecta automaticamente o pagamento sem precisar enviar comprovantes." );
+		$this->order_recived_message 	= $this->get_option( 'order_recived_message', '<h4 style="text-align: center;">Faça o pagamento para finalizar!</h4><p style="text-align: center;">Escaneie o código QR ou copie o código abaixo para fazer o PIX.<br>O sistema vai detectar automáticamente quando fizer a transferência.</p><p style="text-align: center;"><strong>Podemos demorar até 5 minutos para detectarmos o pagamento.</strong></p>' );
+		$this->thank_you_message 		= $this->get_option( 'thank_you_message', '<p style="text-align: center;">Sua transferência PIX foi confirmada!<br>O seu pedido já está sendo separado e logo será enviado para seu endereço.</p>' );
 	}
 
 	/**
@@ -145,7 +158,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 	 */
 	protected function get_field_name ( string $field = '' )
 	{ 
-		return $this->id . '_' . $field;	
+		return 'woocommerce_' . $this->id . '_' . $field;	
 	}
 
 	/**

@@ -20,6 +20,11 @@ Muitas vezes a opção de receber PIX pela Pagar.me vem desativada por padrão, 
 
 Compativel com a última versão do Woocommerce.
 
+## 1.1.0 ##
+
+* Customização de textos nas mensagens na tela de pagamento
+* Otimização do código
+
 ## 1.0.1 ##
 
 * Correções de bugs

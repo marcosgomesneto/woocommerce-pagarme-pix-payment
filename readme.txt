@@ -12,13 +12,23 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Pagamentos Pix com Pagarme para WooCommerce ==
 
-A Pagar.me disponibiliza a opção de PIX, para que o pagamento seja compensado automaticamente sem seu cliente precisar enviar comprovantes de pagamento.
+O Plugin gera um QR code para pagamento PIX na finalização da compra. O cliente pode clicar no botão "Copiar Código" e então é só ele ir no aplicativo do banco, entrar na opção "PIX Copia e Cola" e fazer o pagamento.
 
-Esse plugin usa a API da Pagar.me para gerar o link de pagamento, portanto você precisa ter o API KEY e Encryption Key para que o Plugin funcione.
+Quando ele terminar de pagar e voltar para o site, o plugin recebe a confirmação de pagamento e automaticamente uma animação é mostrada com a mensagem de "Pagamento Confirmado".
 
-Para gerar a API Key e Encryption Key é fácil, só entrar na dashboard da Pagar.me. Caso você já tenha o plugin da Pagar.me para cartão de crédito e boleto, provavelmente você já tenha gerado essas Chaves, portanto não precisa gerar novamente, basta entrar na configuração do seu Woocommerce -> Pagamentos e "Gerenciar" a forma de pagamento cadastrada, copiar as informações e colcar nas configurações do PIX.
+O pedido é alterado para processando automáticamente.
 
-Para ter a opção Pix liberada na dashboard da Pagar.me também é preciso solicitar para o atendente no prórpio Chat deles.
+Não é preciso pedir comprovantes para o cliente pois o pagamento é confirmado direto pela API da Pagarme com o Plugin.
+
+Esse plugin é integrado com a plataforma de pagamento **Pagar.me**, portanto você precisa criar uma conta caso não tenha.
+
+Você precisa ter as duas chaves, o API KEY e Encryption Key da **Pagar.me** para que o Plugin funcione.
+
+Para gerar a API Key e Encryption Key é fácil, só entrar na dashboard da Pagar.me. Caso você já tenha a Pagarme como método de pagamento de cartão de crédito e boleto no seu site, você não precisa gerar novas Chaves, use as mesmas adicionando nas configurações do plugin.
+
+Para adicionar essas duas chaves nas configurações do nosso plugin é só ir no menu WooCommerce -> Configurações -> Na aba "Pagamentos", clicar em configuração do "Pix Instantâneo" e preencher os campos com as respectivas chaves.
+
+Muitas vezes a opção de receber PIX pela Pagar.me vem desativada por padrão, mas é bem simples de ativá-la, você pode entrar em contato com a Pagar.me pelo chat deles que eles liberam na mesma hora.
 
 Compativel com a última versão do Woocommerce.
 
