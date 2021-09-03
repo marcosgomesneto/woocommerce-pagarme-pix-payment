@@ -16,12 +16,23 @@ defined( 'ABSPATH' ) || exit;
         <tr valign="top">
 			<th scope="row" class="titledesc">
 				<label for="<?php echo esc_html( $this->get_field_name('checkout_message') ); ?>">Mensagem nas opções de pagamento </label>
+                <p class="mgn-info">
+                    <?php echo __('Quando é selecionado o PIX como forma de pagamento antes de finalizar a compra.', 'wc-pagarme-pix-payment'); ?>
+                </p>
 			</th>
 			<td class="forminp">
 				<fieldset>
 					<legend class="screen-reader-text"><span>Mensagem nas opções de pagamento</span></legend>
-					<textarea rows="3" cols="20" class="input-text wide-input " type="textarea" name="<?php echo esc_html( $this->get_field_name('checkout_message') ); ?>" id="<?php echo esc_html( $this->get_field_name('checkout_message') ); ?>" style="" placeholder="" required="required"><?php echo $this->checkout_message; ?></textarea>
-					<p class="description">Quando é selecionado o PIX como forma de pagamento antes de finalizar a compra.</p>
+                    <?php 
+                        wp_editor( 
+                            $this->checkout_message,
+                            "checkout_message", 
+                            [
+                                'editor_class'  => 'mgn-editor',
+                                'textarea_name' => esc_html( $this->get_field_name('checkout_message') )
+                            ] 
+                        ); 
+                    ?>
 				</fieldset>
 			</td>
 		</tr>
@@ -31,7 +42,8 @@ defined( 'ABSPATH' ) || exit;
                     <?php echo esc_html( __('Mensagem na tela do QR Code', 'wc-pagarme-pix-payment') ); ?>
                 </label>
                 <p class="mgn-info">
-                    <?php echo __('Essa mensagem aparece na tela do QR Code, depois que o cliente finaliza o pedido.', 'wc-pagarme-pix-payment'); ?></p>
+                    <?php echo __('Essa mensagem aparece na tela do QR Code, depois que o cliente finaliza o pedido.<br><br><code>[qr_code]</code> para definir o local do código QR.<br><code>[copy_button]</code> para definir o local do botão para copiar o código.<br><code>[text_code]</code> para definir o local do código pix em texto corrido', 'wc-pagarme-pix-payment'); ?>
+                </p>
             </th>
             <td class="forminp">
                 <fieldset>

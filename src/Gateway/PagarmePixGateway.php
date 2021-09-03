@@ -46,7 +46,8 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		// Actions.
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 		add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'thankyou_page' ) );
-		//add_action( 'woocommerce_email_after_order_table', array( $this, 'email_instructions' ), 10, 3 );
+		add_action( 'woocommerce_order_details_before_order_table', array( $this, 'order_view_page' ) );
+		add_action( 'woocommerce_email_before_order_table', array( $this, 'email_instructions' ), 10, 3 );
 		add_action( 'woocommerce_api_' . $this->id, array( $this, 'ipn_handler' ) );
 	}
 
@@ -78,7 +79,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 				$update_settings['debug'] 			= isset($debug) ? 'yes' : 'no';
 			break;
 			case 'customize':
-				$checkout_message 		= filter_input( INPUT_POST, $this->get_field_name('checkout_message'), FILTER_SANITIZE_STRING );
+				$checkout_message 		= filter_input( INPUT_POST, $this->get_field_name('checkout_message') ); //Liberar HTML
 				$order_recived_message 	= filter_input( INPUT_POST, $this->get_field_name('order_recived_message') );
 				$thank_you_message 		= filter_input( INPUT_POST, $this->get_field_name('thank_you_message') );
 
@@ -89,6 +90,11 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 				$update_settings['checkout_message'] 		= $checkout_message;
 				$update_settings['order_recived_message'] 	= $order_recived_message;
 				$update_settings['thank_you_message'] 		= $thank_you_message;		
+			break;
+			case 'email':
+				$email_instruction 	= filter_input( INPUT_POST, $this->get_field_name('email_instruction') ); //Allow HTML
+				$email_instruction	= preg_replace('#<script(.*?)>(.*?)</script>#is', '', $email_instruction);
+				$update_settings['email_instruction'] 		= $email_instruction;
 			break;
 		}
 		
@@ -146,8 +152,9 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		$this->api_key        			= $this->get_option( 'api_key' );
 		$this->encryption_key 			= $this->get_option( 'encryption_key' );
 		$this->checkout_message 		= $this->get_option( 'checkout_message', "Ao finalizar a compra, iremos gerar o código Pix para pagamento.\r\n\r\nNosso sistema detecta automaticamente o pagamento sem precisar enviar comprovantes." );
-		$this->order_recived_message 	= $this->get_option( 'order_recived_message', '<h4 style="text-align: center;">Faça o pagamento para finalizar!</h4><p style="text-align: center;">Escaneie o código QR ou copie o código abaixo para fazer o PIX.<br>O sistema vai detectar automáticamente quando fizer a transferência.</p><p style="text-align: center;"><strong>Podemos demorar até 5 minutos para detectarmos o pagamento.</strong></p>' );
+		$this->order_recived_message 	= $this->get_option( 'order_recived_message', '<h4 style="text-align: center;">Faça o pagamento para finalizar!</h4><p style="text-align: center;">Escaneie o código QR ou copie o código abaixo para fazer o PIX.<br>O sistema vai detectar automáticamente quando fizer a transferência.</p><p style="text-align: center;"><strong>Podemos demorar até 5 minutos para detectarmos o pagamento.</strong></p><p style="text-align: center;">[copy_button]</p><p style="text-align: center;">[qr_code]</p>' );
 		$this->thank_you_message 		= $this->get_option( 'thank_you_message', '<p style="text-align: center;">Sua transferência PIX foi confirmada!<br>O seu pedido já está sendo separado e logo será enviado para seu endereço.</p>' );
+		$this->email_instruction		= $this->get_option( 'email_instruction', '<h4 style="text-align: center;">Faça o pagamento para finalizar a compra</h4><p style="text-align: center;">Escaneie o código abaixo</p><p style="text-align: center;">[qr_code]</p><h4 style="text-align: center;">ou</h4><p style="text-align: center;">Copie o código a baixo</p><p style="text-align: center;"><code>[text_code]</code></p><p style="text-align: center;margin-top: 15px;">Pague no aplicativo do seu banco na opção Pix Copia e Cola</p>');
 	}
 
 	/**
@@ -199,6 +206,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		return [
 			'general' => __( 'Geral', 'wc-pagarme-pix-payment' ),
 			'customize' => __( 'Customizar', 'wc-pagarme-pix-payment' ),
+			'email' => __( 'E-mail', 'wc-pagarme-pix-payment' )
 		];
 	}
 
@@ -263,15 +271,29 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 			[
 				'qr_code' => $qr_code,
 				'thank_you_message' => $this->thank_you_message,
-				'order_recived_message' => $this->order_recived_message
+				'order_recived_message' => $this->order_recived_message,
+				'order' => $order,
+				'order_key' => $order->get_order_key()
 			],
 			WC()->template_path().\WC_PAGARME_PIX_PAYMENT_DIR_NAME . '/',
 			WC_PAGARME_PIX_PAYMENT_PLUGIN_PATH . 'templates/'
 		);
 	}
 
-	public function is_debug() {
-		return 'yes' === $this->debug ? true : false;
+	/**
+	 * Pix QR Code in Order View
+	 * 
+	 * @since 1.1.0
+	 * @return void
+	*/
+	public function order_view_page( $order )
+	{
+		if( $order->get_status() == 'on-hold' &&
+			$order->get_payment_method() == $this->id &&
+			is_wc_endpoint_url( 'view-order' ) )
+		{ 
+			do_action( 'woocommerce_thankyou_'.$order->get_payment_method(), $order->get_id() ); 
+		}
 	}
 
 	/**
@@ -284,21 +306,31 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 	 * @return string                Payment instructions.
 	 */
 	public function email_instructions( $order, $sent_to_admin, $plain_text = false ) {
-		if ( $sent_to_admin || ! in_array( $order->get_status(), array( 'processing', 'on-hold' ), true ) || $this->id !== $order->payment_method ) {
+		if ( ! in_array( $order->get_status(), array( 'on-hold' ), true ) || 
+			$this->id !== $order->payment_method ) {
 			return;
 		}
 
 		$email_type = $plain_text ? 'plain' : 'html';
 
-		wc_get_template(
-			'banking-ticket/emails/' . $email_type . '-instructions.php',
-			array(
-				'url' => $data['boleto_url'],
-			),
-			'woocommerce/pagarme/',
-			WC_Pagarme::get_templates_path()
-		);
+		$qr_code = $order->get_meta('_wc_pagarme_pix_payment_qr_code');
 
+		wc_get_template(
+			'email-new-order-instructions.php',
+			[
+				'qr_code' => $qr_code,
+				'email_instruction' => $this->email_instruction
+			],
+			WC()->template_path() . \WC_PAGARME_PIX_PAYMENT_DIR_NAME.'/',
+			WC_PAGARME_PIX_PAYMENT_PLUGIN_PATH . 'templates/emails/'
+		);
+	}
+
+	/**
+	 * Is Debug function
+	 */
+	public function is_debug() {
+		return 'yes' === $this->debug ? true : false;
 	}
 
 	/**

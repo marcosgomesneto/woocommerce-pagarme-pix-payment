@@ -20,6 +20,14 @@ Muitas vezes a opção de receber PIX pela Pagar.me vem desativada por padrão, 
 
 Compativel com a última versão do Woocommerce.
 
+## 1.2.0 ##
+
+* QR Code de pagamento PIX na tela de pedidos
+* Instruções de pagamento PIX no E-mail
+* Agora é possivel definir a localização da imagem do QR Code e do botão no texto
+* Texto no finalizar compra pode ser feito em HTML
+* Correções de bugs para temas que não tem bootstrap ( Centralização de textos padrões )
+
 ## 1.1.0 ##
 
 * Customização de textos nas mensagens na tela de pagamento

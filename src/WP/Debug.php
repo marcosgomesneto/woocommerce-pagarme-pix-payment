@@ -15,21 +15,21 @@ class Debug
 	/**
 	 * Logger
 	 * @var WC_Logger
-	 * @since 1.2.0
+	 * @since 1.0.0
 	 */
 	protected $logger;
 
 	/**
 	 * Is debugging?
 	 * @var bool
-	 * @since 1.2.0
+	 * @since 1.0.0
 	 */
 	protected $debug;
 
 	/**
 	 * Not allowed to construct as public mode.
 	 * 
-	 * @since 1.2.0
+	 * @since 1.0.0
 	 * @return void
 	 */
 	protected function __construct ()
@@ -38,7 +38,7 @@ class Debug
 	/**
 	 * Returns a singleton instance of this class.
 	 * 
-	 * @since 1.2.0
+	 * @since 1.0.0
 	 * @return self
 	 */
 	protected static function getInstance ()
@@ -57,7 +57,7 @@ class Debug
 	/**
 	 * Return if is debugging.
 	 * 
-	 * @since 1.2.0
+	 * @since 1.0.0
 	 * @return bool
 	 */
 	public static function debugging () : bool
@@ -66,7 +66,7 @@ class Debug
 	/**
 	 * Get debug logger if is debugging.
 	 * 
-	 * @since 1.2.0
+	 * @since 1.0.0
 	 * @return WC_Logger|null
 	 */
 	public static function logger () : ? WC_Logger
@@ -76,7 +76,7 @@ class Debug
 	 * Change debug state.
 	 * 
 	 * @param bool $debug
-	 * @since 1.2.0
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public static function changeState ( bool $debug = true )
@@ -87,7 +87,7 @@ class Debug
 	 * 
 	 * @param string $message
 	 * @param mixed[] $context
-	 * @since 1.2.0
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public static function info ( string $message, array $context = [] )
@@ -104,7 +104,7 @@ class Debug
 	 * 
 	 * @param string $message
 	 * @param mixed[] $context
-	 * @since 1.2.0
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public static function error ( string $message, array $context = [] )
@@ -121,7 +121,7 @@ class Debug
 	 * 
 	 * @param string $message
 	 * @param mixed[] $context
-	 * @since 1.2.0
+	 * @since 1.0.0
 	 * @return void
 	 */
 	public static function debug ( string $message, array $context = [] )
@@ -136,7 +136,7 @@ class Debug
 	/**
 	 * Get logger if is debugging.
 	 * 
-	 * @since 1.2.0
+	 * @since 1.0.0
 	 * @return WC_Logger|null
 	 */
 	public function getLogger () 
@@ -156,7 +156,7 @@ class Debug
 	 * Set new debug state.
 	 * 
 	 * @param bool $debug
-	 * @since 1.2.0
+	 * @since 1.0.0
 	 * @return self
 	 */
 	public function setDebug ( bool $debug = true )
@@ -165,7 +165,7 @@ class Debug
 	/**
 	 * Get the debug state.
 	 * 
-	 * @since 1.2.0
+	 * @since 1.0.0
 	 * @return bool
 	 */
 	public function isDebugging () : bool

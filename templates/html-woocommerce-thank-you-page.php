@@ -3,13 +3,24 @@ defined( 'ABSPATH' ) || exit;
 
 use chillerlan\QRCode\QRCode;
 
-$order_id = wc_get_order_id_by_order_key($_GET['key']);
-$order = wc_get_order( $order_id );
-
 if( $order ){
-    $paid = get_post_meta($order_id, '_wc_pagarme_pix_payment_paid', 'no') === 'yes' ? true : false;
+    $paid = get_post_meta($order->get_id(), '_wc_pagarme_pix_payment_paid', 'no') === 'yes' ? true : false;
 }
 
+ob_start();
+?>
+
+    <button class="button copy-qr-code"><i class="fa fa-copy fa-lg pr-3"></i>Clique aqui para copiar o código</button>
+    <p class="text-success qrcode-copyed" style="text-align: center; display: none; margin-top: 15px;">Código copiado com sucesso!<br>Vá até o aplicativo do seu banco e cole o código.</p>
+
+<?php
+$copy_button_html = ob_get_clean();
+
+ob_start();
+?>
+    <img src="<?php echo (new QRCode)->render( esc_html($qr_code) ); ?>" />
+<?php
+$qr_code_html = ob_get_clean();
 
 ?>
 <style>
@@ -20,6 +31,9 @@ if( $order ){
         border: 1px solid #dadada;
         margin: 0 auto;
         padding: 10px;
+    }
+    .text-center{
+        text-align: center;
     }
     @-webkit-keyframes scaleAnimation {
     0% {
@@ -149,15 +163,27 @@ if( $order ){
         <?php echo nl2br($thank_you_message); ?>
     </div>
     <div id="watingPixPaymentBox" style="display: <?php echo $paid ? 'none' : 'block'; ?>;">
-        <?php echo nl2br($order_recived_message); ?>
-        <button class="btn btn-primary copy-qr-code"><i class="fa fa-copy fa-lg pr-3"></i>Clique aqui para copiar o código</button>
-        <p class="text-success mt-4 qrcode-copyed" style="display: none;">Código copiado com sucesso!<br>Vá até o aplicativo do seu banco e cole o código.</p>
-        <div>
-            <img src="<?php echo (new QRCode)->render( esc_html($qr_code) ); ?>" />
-        </div>
-        <!--<h5 class="mt-4">Código:</h5>
-        <div><?php echo esc_html($qr_code); ?></div>-->
+        <?php
+            if( preg_match('/\[copy_button\]/i', $order_recived_message) ){
+                $order_recived_message = preg_replace('/\[copy_button\]/i', $copy_button_html, $order_recived_message, 1);
+            }else{
+                $order_recived_message .= sprintf('<p>%s</p>', $copy_button_html );
+            }
+
+            if( preg_match('/\[qr_code\]/i', $order_recived_message) ){
+                $order_recived_message = preg_replace('/\[qr_code\]/i', $qr_code_html, $order_recived_message, 1);
+            }else{
+                $order_recived_message .= sprintf('<p>%s</p>', $qr_code_html);
+            }
+
+            if( preg_match('/\[text_code\]/i', $order_recived_message) ){
+                $order_recived_message = preg_replace('/\[text_code\]/i', $qr_code, $order_recived_message, 1);
+            }
+
+            echo $order_recived_message;
+        ?>
+        
         <div><input type="hidden" value="<?php echo esc_html($qr_code); ?>" id="pixQrCodeInput"></div>
-        <input type="hidden" name="wc_pagarme_pix_order_key" value="<?php echo esc_html( sanitize_text_field( $_GET['key'] ) ); ?>"/>
+        <input type="hidden" name="wc_pagarme_pix_order_key" value="<?php echo esc_html( sanitize_text_field( $order_key ) ); ?>"/>
     </div>
 </div>

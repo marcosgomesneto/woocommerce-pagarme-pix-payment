@@ -11,14 +11,14 @@ defined( 'ABSPATH' ) || exit;
  * WC Pagarme Pix Payment
  *
  * @package WCPagarmePixPayment
- * @since   1.1.0
- * @version 1.1.0
+ * @since   1.0.0
+ * @version 1.0.0
  */
 class Core {
 	/**
 	 * The unique identifier of this plugin.
 	 *
-	 * @since 1.2.0
+	 * @since 1.0.0
 	 * @var string $pluginName
 	 */
 	public $pluginName;
@@ -112,7 +112,7 @@ class Core {
 	}
 
 	public function enqueue_scripts() {
-		if( is_wc_endpoint_url('order-received') && is_checkout() )	{
+		if( ( is_wc_endpoint_url('order-received') && is_checkout() ) || is_wc_endpoint_url( 'view-order' ) )	{
 			wp_enqueue_script( \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME, \WC_PAGARME_PIX_PAYMENT_PLUGIN_URL.'assets/js/public/checkout.js', array( 'jquery' ), \WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION );
 		}
 	}

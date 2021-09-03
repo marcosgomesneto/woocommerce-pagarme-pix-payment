@@ -17,7 +17,7 @@ jQuery(function ( $ ) {
 
     function checkPixPayment() {
         var checkInt = setInterval(function () {
-            $.get( wc_checkout_params.ajax_url, {
+            $.get( woocommerce_params.ajax_url, {
                 'action': 'wc_pagarme_pix_payment_check',
                 'key': $('input[name=wc_pagarme_pix_order_key]').val()
             } ).done( function(data) {
