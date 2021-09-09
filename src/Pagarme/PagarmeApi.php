@@ -136,7 +136,7 @@ class PagarmeApi {
 		$data = array(
 			'api_key'      			=> $this->gateway->api_key,
 			'payment_method'		=> 'pix',
-			'pix_expiration_date' 	=> date('Y-m-d', strtotime(  '+3 days', current_time('timestamp') ) ),
+			'pix_expiration_date' 	=> date('Y-m-d', strtotime(  '+' . $this->gateway->expiration_days . ' days', current_time('timestamp') ) ),
 			'amount'       			=> $order->get_total() * 100,
 			'postback_url' 			=> WC()->api_request_url( $this->gateway->id ),
 			'customer'     			=> array(
@@ -226,6 +226,8 @@ class PagarmeApi {
 		} else {
 
 			update_post_meta( $order_id, '_wc_pagarme_pix_payment_qr_code', $transaction['pix_qr_code'] );
+			update_post_meta( $order_id, '_wc_pagarme_pix_payment_expiration_date', date('Y-m-d', strtotime(  '+' . $this->gateway->expiration_days . ' days', current_time('timestamp') ) ) );
+			update_post_meta( $order_id, '_wc_pagarme_pix_payment_expiration_days', $this->gateway->expiration_days );
 			update_post_meta( $order_id, '_wc_pagarme_pix_payment_transaction_id', $transaction['id'] );
 			update_post_meta( $order_id, '_wc_pagarme_pix_payment_paid', 'no' );
 			

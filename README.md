@@ -20,6 +20,15 @@ Muitas vezes a opção de receber PIX pela Pagar.me vem desativada por padrão, 
 
 Compativel com a última versão do Woocommerce.
 
+## 1.3.0 ##
+
+* Agora é possível alterar o titulo do pix "Pix Instantêneo" para o de sua preferência
+* No template do email é possível colocar o link para a página de pagamento que contém o botão "Copiar QR code"
+* Inclusão do Icone de Pix
+* Escolha as cores do icone pix
+* Mude a data de expiração do QR Code
+* Novo shorcode para inserir a data que expira para o seu cliente
+
 ## 1.2.0 ##
 
 * QR Code de pagamento PIX na tela de pedidos

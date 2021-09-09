@@ -101,19 +101,31 @@ class Core {
 
 		// Startup gateway
 		BaseGateway::init();
-
-		// Metabox init
-		//Metabox::init();
-
-		// Display all notices...
-		//WP::add_action('admin_notices', WP::class, 'display_notices' );
-
+		
 		WP::add_action('wp_enqueue_scripts', $this, 'enqueue_scripts');
+		WP::add_action('admin_enqueue_scripts', $this, 'admin_enqueue_scripts');
 	}
 
 	public function enqueue_scripts() {
 		if( ( is_wc_endpoint_url('order-received') && is_checkout() ) || is_wc_endpoint_url( 'view-order' ) )	{
-			wp_enqueue_script( \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME, \WC_PAGARME_PIX_PAYMENT_PLUGIN_URL.'assets/js/public/checkout.js', array( 'jquery' ), \WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION );
+			wp_enqueue_script( \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME, \WC_PAGARME_PIX_PAYMENT_PLUGIN_URL . 'assets/js/public/checkout.js', array( 'jquery' ), \WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION );
 		}
+	}
+
+	public function admin_enqueue_scripts($hook) {
+		if( $hook != 'woocommerce_page_wc-settings' || !( isset($_GET['section']) && $_GET['section'] == 'wc_pagarme_pix_payment_geteway' ) )
+		return;
+
+		wp_enqueue_script( 
+			'colpick', 
+			\WC_PAGARME_PIX_PAYMENT_PLUGIN_URL . 'assets/js/admin/colpick/colpick.js', 
+			array('jquery'), 
+			\WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION 
+		);
+		
+		wp_enqueue_style( 
+			'colpick', 
+			\WC_PAGARME_PIX_PAYMENT_PLUGIN_URL . 'assets/js/admin/colpick/colpick.css' 
+		);
 	}
 }
