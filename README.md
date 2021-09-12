@@ -22,6 +22,10 @@ Compativel com a última versão do Woocommerce.
 
 ## 1.3.0 ##
 
+* Correção de Bugs
+
+## 1.3.0 ##
+
 * Agora é possível alterar o titulo do pix "Pix Instantêneo" para o de sua preferência
 * No template do email é possível colocar o link para a página de pagamento que contém o botão "Copiar QR code"
 * Inclusão do Icone de Pix
