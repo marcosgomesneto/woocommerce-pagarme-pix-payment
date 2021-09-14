@@ -32,6 +32,14 @@ Muitas vezes a opção de receber PIX pela Pagar.me vem desativada por padrão, 
 
 Compativel com a última versão do Woocommerce.
 
+== 1.3.2 ==
+
+* Correção de Bugs
+
+== 1.3.1 ==
+
+* Correção de Bugs
+
 == 1.3.0 ==
 
 * Agora é possível alterar o titulo do pix "Pix Instantêneo" para o de sua preferência
