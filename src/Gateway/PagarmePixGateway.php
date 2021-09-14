@@ -304,6 +304,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		$order = wc_get_order( $order_id );
 		$qr_code = $order->get_meta('_wc_pagarme_pix_payment_qr_code');
 		$expiration_date = $order->get_meta('_wc_pagarme_pix_payment_expiration_date');
+		$qr_code_image = $order->get_meta('_wc_pagarme_pix_payment_qr_code_image');
 
 		wc_get_template(
 			'html-woocommerce-thank-you-page.php',
@@ -312,6 +313,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 				'thank_you_message' => $this->thank_you_message,
 				'order_recived_message' => $this->order_recived_message,
 				'order' => $order,
+				'qr_code_image' => $qr_code_image,
 				'order_key' => $order->get_order_key(),
 				'expiration_date' => $expiration_date
 			],
@@ -355,11 +357,13 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 
 		$qr_code = $order->get_meta('_wc_pagarme_pix_payment_qr_code');
 		$expiration_date = $order->get_meta('_wc_pagarme_pix_payment_expiration_date');
+		$qr_code_image = $order->get_meta('_wc_pagarme_pix_payment_qr_code_image');
 
 		wc_get_template(
 			'email-new-order-instructions.php',
 			[
 				'qr_code' => $qr_code,
+				'qr_code_image' => $qr_code_image,
 				'email_instruction' => $this->email_instruction,
 				'order_id' => $order->get_id(),
 				'order_key' => $order->get_order_key(),

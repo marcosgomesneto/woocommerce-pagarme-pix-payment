@@ -1,8 +1,6 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-use chillerlan\QRCode\QRCode;
-
 if( $order ){
     $paid = get_post_meta($order->get_id(), '_wc_pagarme_pix_payment_paid', 'no') === 'yes' ? true : false;
 }
@@ -18,7 +16,7 @@ $copy_button_html = ob_get_clean();
 
 ob_start();
 ?>
-    <img src="<?php echo (new QRCode)->render( esc_html($qr_code) ); ?>" />
+    <img src="<?php  echo $qr_code_image; ?>" />
 <?php
 $qr_code_html = ob_get_clean();
 

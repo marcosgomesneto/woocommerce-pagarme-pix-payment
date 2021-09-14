@@ -1,6 +1,7 @@
 <?php
 namespace WCPagarmePixPayment\Pagarme;
 
+use chillerlan\QRCode\QRCode;
 /**
  * Pagarme API Integration class
  */
@@ -225,6 +226,22 @@ class PagarmeApi {
 			);
 		} else {
 
+			if (extension_loaded('mbstring')) {
+				$upload = wp_upload_dir();
+				$upload_folder = sprintf('%s/%s/qr-codes/', $upload['basedir'], \WC_PAGARME_PIX_PAYMENT_DIR_NAME);
+				$upload_url = sprintf('%s/%s/qr-codes/', $upload['baseurl'], \WC_PAGARME_PIX_PAYMENT_DIR_NAME);
+
+				if ( !file_exists( $upload_folder ) )
+				{ wp_mkdir_p($upload_folder); }
+
+				$qrcode_file_name = date('Ymd', strtotime( current_time('mysql') ) ) . $transaction['id'] . '.png';
+				(new QRCode)->render( $transaction['pix_qr_code'], $upload_folder . $qrcode_file_name );			
+
+				update_post_meta( $order_id, '_wc_pagarme_pix_payment_qr_code_image', $upload_url . $qrcode_file_name );
+			}else{
+				update_post_meta( $order_id, '_wc_pagarme_pix_payment_qr_code_image', sprintf("https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=%s&choe=UTF-8", urlencode( $transaction['pix_qr_code'] ) ) );
+			}
+			
 			update_post_meta( $order_id, '_wc_pagarme_pix_payment_qr_code', $transaction['pix_qr_code'] );
 			update_post_meta( $order_id, '_wc_pagarme_pix_payment_expiration_date', date('Y-m-d', strtotime(  '+' . $this->gateway->expiration_days . ' days', current_time('timestamp') ) ) );
 			update_post_meta( $order_id, '_wc_pagarme_pix_payment_expiration_days', $this->gateway->expiration_days );

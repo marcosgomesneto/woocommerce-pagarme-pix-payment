@@ -1,11 +1,9 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-use chillerlan\QRCode\QRCode;
-
 ob_start();
 ?>
-    <img src="<?php echo (new QRCode)->render( esc_html($qr_code) ); ?>" />
+    <img src="<?php echo $qr_code_image; ?>" />
 <?php
 $qr_code_html = ob_get_clean();
 
