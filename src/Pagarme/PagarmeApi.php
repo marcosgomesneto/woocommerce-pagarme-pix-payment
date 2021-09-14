@@ -226,7 +226,7 @@ class PagarmeApi {
 			);
 		} else {
 
-			if (extension_loaded('mbstring')) {
+			if ( extension_loaded('mbstring') && version_compare(phpversion(), "7.4", ">=") ) {
 				$upload = wp_upload_dir();
 				$upload_folder = sprintf('%s/%s/qr-codes/', $upload['basedir'], \WC_PAGARME_PIX_PAYMENT_DIR_NAME);
 				$upload_url = sprintf('%s/%s/qr-codes/', $upload['baseurl'], \WC_PAGARME_PIX_PAYMENT_DIR_NAME);
