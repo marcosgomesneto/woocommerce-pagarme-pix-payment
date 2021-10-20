@@ -23,7 +23,7 @@ if( preg_match('/\[text_code\]/i', $email_instruction) ){
 }
 
 if( preg_match('/\[expiration_date\]/i', $email_instruction) ){
-    $email_instruction = preg_replace('/\[expiration_date\]/i', date('d/m/Y', strtotime($expiration_date) ), $email_instruction);
+    $email_instruction = preg_replace('/\[expiration_date\]/i', date('d/m/Y H:i:s', strtotime($expiration_date) ), $email_instruction);
 }
 
 echo $email_instruction;

@@ -5,7 +5,7 @@ Tags: woocommerce, automatico, payment, pix, e-commerce, shop, ecommerce, pagame
 Requires at least: 4.0
 Requires PHP: 7.0
 Tested up to: 5.8
-Stable tag: 1.3.2
+Stable tag: 1.4.0
 License: GPLv2 or later
 Language: pt_BR
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -31,6 +31,17 @@ Para adicionar essas duas chaves nas configurações do nosso plugin é só ir n
 Muitas vezes a opção de receber PIX pela Pagar.me vem desativada por padrão, mas é bem simples de ativá-la, você pode entrar em contato com a Pagar.me pelo chat deles que eles liberam na mesma hora.
 
 Compativel com a última versão do Woocommerce.
+
+== 1.4.0 ==
+
+* Opção de cancelamento automático do pedido quando expirado o qr code
+* Opção de expiração em horas do qr code
+* Mudar intervalo de verificação de pegamento concluído na página do qr code
+* Correção de bugs
+
+== 1.3.4 ==
+
+* Agora você pode escolher qual status o pedido ficará após o pagamento confirmado
 
 == 1.3.2 ==
 

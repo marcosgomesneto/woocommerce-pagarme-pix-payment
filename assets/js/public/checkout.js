@@ -16,6 +16,10 @@ jQuery(function ( $ ) {
     });
 
     function checkPixPayment() {
+        var interval = 5000;
+        if( typeof window.wc_pagarme_pix_payment_geteway !== 'undefined' )
+            interval = window.wc_pagarme_pix_payment_geteway.checkInterval;
+
         var checkInt = setInterval(function () {
             $.get( woocommerce_params.ajax_url, {
                 'action': 'wc_pagarme_pix_payment_check',
@@ -29,7 +33,7 @@ jQuery(function ( $ ) {
                     return;
                 }
             });
-        }, 5000);
+        }, interval);
     }   
 	
     if( !$('#successPixPaymentBox').is(':visible') )

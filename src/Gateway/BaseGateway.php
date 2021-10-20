@@ -28,12 +28,25 @@ class BaseGateway
 		//$Muscleboss->showErrors();
 		$base = new self();
 
+		$base->expire_payment_scheduled();
+
 		WP::add_filter('woocommerce_payment_gateways', $base, 'add_gateway');
 		WP::add_filter('plugin_action_links_'.\WC_PAGARME_PIX_PAYMENT_BASE_NAME, $base, 'plugin_action_links');
 		WP::add_action('wp_ajax_wc_pagarme_pix_payment_check', $base, 'check_pix_payment');
 		WP::add_action('wp_ajax_nopriv_wc_pagarme_pix_payment_check', $base, 'check_pix_payment');
+		WP::add_action('wp_loaded', $base, 'wp_loaded');	
 	}
 
+	public function wp_loaded()
+	{
+		WP::add_action('wc_pagarme_pix_payment_schedule', $this, 'check_expired_codes');
+	}
+
+	/**
+	 * Check payment ajax request
+	 *
+	 * @return void
+	 */
 	public function check_pix_payment(){
 		$order_id = wc_get_order_id_by_order_key($_GET['key']);
 		$order = wc_get_order( $order_id );
@@ -45,6 +58,54 @@ class BaseGateway
 		}
 
 		wp_die( esc_html__( 'Order not exists', 'wc-pagarme-pix-payment' ), '', array( 'response' => 401 ) );
+	}
+
+	/**
+	 * Check qrcode payment expiration date
+	 *
+	 * @return void
+	 */
+	public function expire_payment_scheduled()
+	{
+		if ( ! wp_next_scheduled( 'wc_pagarme_pix_payment_schedule' ) ) {
+			wp_schedule_event( time(), 'hourly', 'wc_pagarme_pix_payment_schedule' );
+		}
+	}
+
+	/**
+	 * Check expired qr codes
+	 *
+	 * @return void
+	 */
+	public function check_expired_codes()
+	{
+		$plugin_options = maybe_unserialize( get_option('woocommerce_wc_pagarme_pix_payment_geteway_settings', false) );
+
+		if( !( $plugin_options && isset( $plugin_options['auto_cancel'] ) && $plugin_options['auto_cancel'] == 'yes' ) )
+			return;
+
+		$pix_orders = wc_get_orders(array(
+			'limit'=>-1,
+			'type'=> 'shop_order',
+			'status'=> array( 'on-hold' ),
+			'payment_method' => 'wc_pagarme_pix_payment_geteway'
+			)
+		);
+		foreach($pix_orders as $order){
+			$expiration_date = $order->get_meta('_wc_pagarme_pix_payment_expiration_date');
+			$date_format = 'Y-m-d H:i:s';
+			
+			if( preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $expiration_date) ){
+				$date_format = 'Y-m-d';
+			}elseif( !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/', $expiration_date) ){
+				continue;
+			}
+			$expiration_date = \DateTime::createFromFormat($date_format, $expiration_date);
+			$current_date = \DateTime::createFromFormat($date_format, date($date_format, strtotime(current_time('mysql'))));
+			if( $current_date >= $expiration_date ){
+				$order->update_status('cancelled', 'PIX Pagarme: QR Code expirado, cancelamento automático do pedido.');
+			}
+		}
 	}
 
 	/**

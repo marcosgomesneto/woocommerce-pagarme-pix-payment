@@ -10,7 +10,7 @@
  * Plugin Name:       		Pix Automático com Pagarme para WooCommerce
  * Plugin URI:        		https://github.com/marcosgomesneto/woocommerce-pagarme-pix-payment
  * Description:       		Receba pagamentos via PIX no WooCommerce com a Pagar-me de forma automática sem precisar de comprovantes de pagamento.
- * Version:           		1.3.2
+ * Version:           		1.4.0
  * Requires at least: 		5.2
  * Requires PHP:      		7.0
  * WC requires at least:	3.0
@@ -25,11 +25,17 @@ defined( 'ABSPATH' ) || exit;
 
 //Define globals
 define( 'WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME', 'wc-pagarme-pix-payment' );
-define( 'WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION', '1.3.2' );
+define( 'WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION', '1.4.0' );
 define( 'WC_PAGARME_PIX_PAYMENT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'WC_PAGARME_PIX_PAYMENT_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WC_PAGARME_PIX_PAYMENT_BASE_NAME', plugin_basename( __FILE__ ) );
 define( 'WC_PAGARME_PIX_PAYMENT_DIR_NAME', dirname(plugin_basename( __FILE__ )) );
+
+function deactivate_wc_pagarme_pix_payment() {
+    $timestamp = wp_next_scheduled( 'wc_pagarme_pix_payment_schedule' );
+    wp_unschedule_event( $timestamp, 'wc_pagarme_pix_payment_schedule' );
+}
+register_deactivation_hook( __FILE__, 'deactivate_wc_pagarme_pix_payment' );
 
 require WC_PAGARME_PIX_PAYMENT_PLUGIN_PATH . 'vendor/autoload.php';
 

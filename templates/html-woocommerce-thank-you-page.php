@@ -179,7 +179,7 @@ $qr_code_html = ob_get_clean();
             }
 
             if( preg_match('/\[expiration_date\]/i', $order_recived_message) ){
-                $order_recived_message = preg_replace('/\[expiration_date\]/i', date('d/m/Y', strtotime($expiration_date) ), $order_recived_message, 1);
+                $order_recived_message = preg_replace('/\[expiration_date\]/i', date('d/m/Y H:i:s', strtotime($expiration_date) ), $order_recived_message, 1);
             }
 
             echo $order_recived_message;

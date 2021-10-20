@@ -20,6 +20,24 @@ Muitas vezes a opção de receber PIX pela Pagar.me vem desativada por padrão, 
 
 Compativel com a última versão do Woocommerce.
 
+## 1.4.0 ##
+
+* Opção de cancelamento automático do pedido quando expirado o qr code
+* Opção de expiração em horas do qr code
+* Mudar intervalo de verificação de pegamento concluído na página do qr code
+* Correção de bugs
+## 1.3.4 ##
+
+* Agora você pode escolher qual status o pedido ficará após o pagamento confirmado
+
+## 1.3.2 ##
+
+* Correção de Bugs
+
+## 1.3.1 ##
+
+* Correção de Bugs
+
 ## 1.3.0 ##
 
 * Correção de Bugs
