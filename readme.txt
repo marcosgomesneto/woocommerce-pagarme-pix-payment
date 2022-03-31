@@ -5,7 +5,7 @@ Tags: woocommerce, automatico, payment, pix, e-commerce, shop, ecommerce, pagame
 Requires at least: 4.0
 Requires PHP: 7.0
 Tested up to: 5.9.2
-Stable tag: 1.4.2
+Stable tag: 1.5.0
 License: GPLv2 or later
 Language: pt_BR
 License URI: http://www.gnu.org/licenses/gpl-2.0.html

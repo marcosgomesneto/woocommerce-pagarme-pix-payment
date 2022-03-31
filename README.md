@@ -29,7 +29,7 @@ Muitas vezes a opção de receber PIX pela Pagar.me vem desativada por padrão, 
 
 Compativel com a última versão do Woocommerce.
 
-## 1.4.2 ##
+## 1.5.0 ##
 
 * Agora é possível criar desconto quando o método de pagamento for pix
 * Escolha entre desconto fixo ou Porcentagem
