@@ -14,8 +14,7 @@ if( preg_match('/\[qr_code\]/i', $email_instruction) ){
 }
 
 if( preg_match('/\[(link)\s{0,}(text=[\"\”](.+)[\"\”])?\s{0,}\]/i', $email_instruction, $matches) ){
-    $checkout_order_url = wc_get_checkout_url() . 'order-received/' . $order_id . '/?key=' . $order_key ;
-    $email_instruction = preg_replace('/\[link.+\]/i', '<a href="' . $checkout_order_url . '">' . ( isset( $matches[3] ) ? $matches[3] : 'Clique aqui' ) . '</a>', $email_instruction, 1);
+    $email_instruction = preg_replace('/\[link.+\]/i', '<a href="' . $order_url . '">' . ( isset( $matches[3] ) ? $matches[3] : 'Clique aqui' ) . '</a>', $email_instruction, 1);
 }
 
 if( preg_match('/\[text_code\]/i', $email_instruction) ){

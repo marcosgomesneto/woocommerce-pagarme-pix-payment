@@ -76,6 +76,40 @@ defined( 'ABSPATH' ) || exit;
 		</tr>
         <tr valign="top">
 			<th scope="row" class="titledesc">
+                <label for="<?php echo esc_html( $this->get_field_name('apply_discount') ); ?>">Desconto ao pagar com PIX</label>
+			</th>
+			<td class="forminp">
+				<fieldset>
+                    <label for="<?php echo esc_html( $this->get_field_name('apply_discount') ); ?>">
+					<input class="" type="checkbox" name="<?php echo esc_html( $this->get_field_name('apply_discount') ); ?>" id="<?php echo esc_html( $this->get_field_name('apply_discount') ); ?>" <?php echo $this->apply_discount == 'yes' ? 'checked' : '' ; ?>>Aplicar desconto ao selecionar o PIX como pagamento</label>
+				</fieldset>
+                <fieldset>
+					<select class="select" 
+                        name="<?php echo esc_html( $this->get_field_name('apply_discount_type') ); ?>" 
+                        id="<?php echo esc_html( $this->get_field_name('apply_discount_type') ); ?>" 
+                        style="width: 200px;"
+                        required="required">
+                        <option value="fixed"<?php echo $this->apply_discount_type == 'fixed' ? ' selected' : ''; ?>>Fixo</option>
+                        <option value="percentage"<?php echo $this->apply_discount_type == 'percentage' ? ' selected' : ''; ?>>Porcentagem</option>>Porcentagem</option>
+                    </select>
+				</fieldset>
+                <fieldset>
+                    <input 
+                        class="input-text regular-input" 
+                        type="text" 
+                        pattern="[0-9]+([\,][0-9]+)?"
+                        title="Só aceita um número inteiro ou então separado por virgula com 2 casas decimais: ex 2,50"
+                        style="width: 200px;"
+                        name="<?php echo esc_html( $this->get_field_name('apply_discount_amount') )?>" 
+                        id="<?php echo esc_html( $this->get_field_name('apply_discount_amount') )?>" 
+                        value="<?php echo $apply_discount_amount = preg_replace('/\./i', ',', esc_html($this->apply_discount_amount));?>" 
+                        required="required"/>
+				</fieldset>
+                <p class="description">Quando o usuário selecionar o pix como pagamento, será aplicado um desconto.</p>
+			</td>
+		</tr>
+        <tr valign="top">
+			<th scope="row" class="titledesc">
                 <label for="<?php echo esc_html( $this->get_field_name('auto_cancel') ); ?>">Cancelar ao expirar</label>
 			</th>
 			<td class="forminp">

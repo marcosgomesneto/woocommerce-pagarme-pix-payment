@@ -4,9 +4,18 @@ O Plugin gera um QR code para pagamento PIX na finalização da compra. O client
 
 Quando ele terminar de pagar e voltar para o site, o plugin recebe a confirmação de pagamento e automaticamente uma animação é mostrada com a mensagem de "Pagamento Confirmado".
 
-O pedido é alterado para processando automaticamente.
+O pedido é alterado para processando automaticamente. (Você pode alterar para que o pedido mude para outro status de sua preferência)
 
 Não é preciso pedir comprovantes para o cliente pois o pagamento é confirmado direto pela API da Pagarme com o Plugin.
+
+Você também pode:
+* Escolher o tempo de expiração do qr code (Em dias ou horas)
+* Escolher cancelar automaticamente o pedido quando o qr code expirar
+* Customizar as mensagens de email e da tela de pagamento
+* Escolher a cor do icone do pix nas opções de pagamento
+* Entre outras coisas
+* Se quiser sugerir uma alteração, acesse a guia suporte na pagina do plugin
+* Sinta-se à vontade de fazer uma doação via PIX pela chave aleatória: 58a2463e-0e6b-4b00-aa7d-c62c6c4b712a
 
 Esse plugin é integrado com a plataforma de pagamento **Pagar.me**, portanto você precisa criar uma conta caso não tenha.
 
@@ -20,12 +29,23 @@ Muitas vezes a opção de receber PIX pela Pagar.me vem desativada por padrão, 
 
 Compativel com a última versão do Woocommerce.
 
+## 1.4.2 ##
+
+* Agora é possível criar desconto quando o método de pagamento for pix
+* Escolha entre desconto fixo ou Porcentagem
+* Uma aba de "Doação" para quem quiser ajudar com qualquer valor
+
+## 1.4.1 ##
+
+* Correções e Bugs
+
 ## 1.4.0 ##
 
 * Opção de cancelamento automático do pedido quando expirado o qr code
 * Opção de expiração em horas do qr code
 * Mudar intervalo de verificação de pegamento concluído na página do qr code
 * Correção de bugs
+
 ## 1.3.4 ##
 
 * Agora você pode escolher qual status o pedido ficará após o pagamento confirmado

@@ -35,6 +35,7 @@ class BaseGateway
 		WP::add_action('wp_ajax_wc_pagarme_pix_payment_check', $base, 'check_pix_payment');
 		WP::add_action('wp_ajax_nopriv_wc_pagarme_pix_payment_check', $base, 'check_pix_payment');
 		WP::add_action('wp_loaded', $base, 'wp_loaded');	
+		WP::add_action('woocommerce_cart_calculate_fees', $base, 'add_discount');
 	}
 
 	public function wp_loaded()
@@ -106,6 +107,45 @@ class BaseGateway
 				$order->update_status('cancelled', 'PIX Pagarme: QR Code expirado, cancelamento automático do pedido.');
 			}
 		}
+	}
+
+	/**
+	 * Add discount.
+	 */
+	public function add_discount( $cart ) {
+		if ( is_admin() && ! defined( 'DOING_AJAX' ) || is_cart() ) {
+			return;
+		}
+
+		$plugin_options = maybe_unserialize( get_option('woocommerce_wc_pagarme_pix_payment_geteway_settings', false) );
+			
+		if ( WC()->session->chosen_payment_method == 'wc_pagarme_pix_payment_geteway' &&
+			isset( $plugin_options['apply_discount'] ) && $plugin_options['apply_discount'] == 'yes' &&
+			isset( $plugin_options['apply_discount_type'] ) && isset( $plugin_options['apply_discount_amount'] )
+		){
+			
+			$type = $plugin_options['apply_discount_type'];
+			$amount  = $plugin_options['apply_discount_amount'];
+
+			if( apply_filters( 'wc_pagarme_pix_payment_apply_discount', 0 < $amount, $cart ) ) {
+				$payment_gateways = WC()->payment_gateways->payment_gateways();
+				$gateway          = $payment_gateways['wc_pagarme_pix_payment_geteway'];
+				$name			  = sprintf('Desconto para %s %s', $gateway->title, $type == 'percentage' ? " ({$amount}%)" : '');
+				$discount_name    = apply_filters( 'wc_pagarme_pix_payment_apply_discount_name', $name);
+				$cart_discount    = $this->calculate_discount( $type, $amount, $cart->cart_contents_total ) * - 1;
+				$cart->add_fee( $discount_name, $cart_discount, true );
+			}
+		}
+	}
+
+	/**
+	 * Calcule the discount amount.
+	 */
+	protected function calculate_discount( $type, $value, $subtotal ) {
+		if ( $type == 'percentage' ) {
+			$value = ( $subtotal / 100 ) * ( $value );
+		}
+		return $value;
 	}
 
 	/**

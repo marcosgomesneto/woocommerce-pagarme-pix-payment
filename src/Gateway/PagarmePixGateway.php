@@ -47,8 +47,8 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 			&& isset( $_GET['section'] )
 			&& $_GET['section'] == 'wc_pagarme_pix_payment_geteway'
 		){
-			$update_settings = get_option($this->get_option_key(), []);
 			$update_settings['read_notice'] = true;
+			$update_settings = get_option($this->get_option_key(), []);
 			$this->read_notice = true;
 			update_option( $this->get_option_key(), apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $update_settings ), 'yes' );
 		}
@@ -79,16 +79,18 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 			case 'general':				
 				$title 				= filter_input( INPUT_POST, $this->get_field_name('title'), FILTER_SANITIZE_STRING );
 				$api_key 			= filter_input( INPUT_POST, $this->get_field_name('api_key'), FILTER_SANITIZE_STRING );
+				$api_version 		= filter_input( INPUT_POST, $this->get_field_name('api_version'), FILTER_SANITIZE_STRING );
 				$encryption_key		= filter_input( INPUT_POST, $this->get_field_name('encryption_key'), FILTER_SANITIZE_STRING );
 				$debug				= filter_input( INPUT_POST, $this->get_field_name('debug'), FILTER_SANITIZE_STRING );
 				$after_paid_status	= filter_input( INPUT_POST, $this->get_field_name('after_paid_status'), FILTER_SANITIZE_STRING );
 
-				if( empty($api_key) || empty($encryption_key) || empty($title) ){
+				if( empty($api_key) || empty($encryption_key) || empty($title) || empty($api_version) ){
 					WC_Admin_Settings::add_error( __('É preciso preencher a todos os campos', \WC_PAGARME_PIX_PAYMENT_DIR_NAME) ); 
 					return;
 				}
 				
 				$update_settings['api_key'] 		= $api_key;
+				$update_settings['api_version'] 	= $api_version;
 				$update_settings['title'] 			= $title;
 				$update_settings['encryption_key'] 	= $encryption_key;
 				$update_settings['debug'] 			= isset($debug) ? 'yes' : 'no';
@@ -120,6 +122,9 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 			case 'advanced':
 				$check_payment_interval = filter_input( INPUT_POST, $this->get_field_name('check_payment_interval'), FILTER_SANITIZE_NUMBER_INT );
 				$auto_cancel			= filter_input( INPUT_POST, $this->get_field_name('auto_cancel'), FILTER_SANITIZE_STRING );
+				$apply_discount			= filter_input( INPUT_POST, $this->get_field_name('apply_discount'), FILTER_SANITIZE_STRING );
+				$apply_discount_amount	= filter_input( INPUT_POST, $this->get_field_name('apply_discount_amount'), FILTER_UNSAFE_RAW );
+				$apply_discount_type	= filter_input( INPUT_POST, $this->get_field_name('apply_discount_type'), FILTER_UNSAFE_RAW );
 				$expiration_days		= filter_input( INPUT_POST, $this->get_field_name('expiration_days'), FILTER_VALIDATE_INT );
 				$expiration_hours		= filter_input( INPUT_POST, $this->get_field_name('expiration_hours'), FILTER_VALIDATE_INT );
 
@@ -153,8 +158,29 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 					return;
 				}
 
+				if( isset($apply_discount) && ( empty($apply_discount_amount) || empty($apply_discount_type) ) ){
+					WC_Admin_Settings::add_error( __('Ao ativar o desconto você precisa preencher os campos.', \WC_PAGARME_PIX_PAYMENT_DIR_NAME) ); 
+					return;
+				}
+
+				if( isset($apply_discount) && $apply_discount_amount == '0' ){
+					WC_Admin_Settings::add_error( __('O desconto não pode ser 0.', \WC_PAGARME_PIX_PAYMENT_DIR_NAME) ); 
+					return;
+				}
+
+				if(!preg_match('/^[0-9]+([\,][0-9]{1,2})$/i', $apply_discount_amount)){
+					WC_Admin_Settings::add_error( __('O desconto só poder ter números inteiros ou então separado por "," (vírgula) com até 2 casas decimais: ex: 10 ou 5,80', \WC_PAGARME_PIX_PAYMENT_DIR_NAME) ); 
+					return;
+				}
+
+				$apply_discount_amount = preg_replace('/,/i', '.', $apply_discount_amount);
+
+
 				$update_settings['check_payment_interval'] 	= $check_payment_interval;
 				$update_settings['auto_cancel'] 			= isset($auto_cancel) ? 'yes' : 'no';
+				$update_settings['apply_discount'] 			= isset($apply_discount) ? 'yes' : 'no';
+				$update_settings['apply_discount_amount'] 	= $apply_discount_amount;
+				$update_settings['apply_discount_type'] 	= $apply_discount_type;
 				$update_settings['expiration_days'] 		= $expiration_days;
 				$update_settings['expiration_hours'] 		= $expiration_hours;
 			break;
@@ -176,6 +202,16 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 				'type'              => 'text',
 				'description'       => __( 'Esse titulo irá aparecer na opção de pagamento para o cliente', 'wc-pagarme-pix-payment' ),
 				'default'           => '',
+				'custom_attributes' => array(
+					'required' => 'required',
+				),
+			),
+			'api_version' => array(
+				'title'             => __( 'Pagar.me Versão API', 'wc-pagarme-pix-payment' ),
+				'type'              => 'select',
+				'description'       => __( 'Insira a versão da API da pagar.me que você está usando', 'wc-pagarme-pix-payment' ),
+				'default'           => 'v4',
+				'options'           => array('v4' => 'v4 (01/09/2019)'),
 				'custom_attributes' => array(
 					'required' => 'required',
 				),
@@ -230,6 +266,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		$this->description    			= $this->get_option( 'description' );
 		$this->debug          			= $this->get_option( 'debug' );
 		$this->async          			= $this->get_option( 'async' );
+		$this->api_version        		= $this->get_option( 'api_version' );
 		$this->api_key        			= $this->get_option( 'api_key' );
 		$this->encryption_key 			= $this->get_option( 'encryption_key' );
 		$this->checkout_message 		= $this->get_option( 'checkout_message', "Ao finalizar a compra, iremos gerar o código Pix para pagamento.\r\n\r\nNosso sistema detecta automaticamente o pagamento sem precisar enviar comprovantes." );
@@ -244,6 +281,9 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		$this->read_notice				= $this->get_option( 'read_notice', false );
 		$this->check_payment_interval	= $this->get_option( 'check_payment_interval', '5' );
 		$this->auto_cancel				= $this->get_option( 'auto_cancel', 'no' );
+		$this->apply_discount			= $this->get_option( 'apply_discount', 'no' );
+		$this->apply_discount_type		= $this->get_option( 'apply_discount_type', 'fixed' );
+		$this->apply_discount_amount	= $this->get_option( 'apply_discount_amount', '0' );
 	}
 
 	/**
@@ -296,7 +336,8 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 			'general' => __( 'Geral', 'wc-pagarme-pix-payment' ),
 			'customize' => __( 'Customizar', 'wc-pagarme-pix-payment' ),
 			'email' => __( 'E-mail', 'wc-pagarme-pix-payment' ),
-			'advanced' => __( 'Avançado', 'wc-pagarme-pix-payment' )
+			'advanced' => __( 'Avançado', 'wc-pagarme-pix-payment' ),
+			'donate' => __( 'Doação', 'wc-pagarme-pix-payment' )
 		];
 	}
 
@@ -419,7 +460,8 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 				'email_instruction' => $this->email_instruction,
 				'order_id' => $order->get_id(),
 				'order_key' => $order->get_order_key(),
-				'expiration_date' => $expiration_date
+				'expiration_date' => $expiration_date,
+				'order_url' => $order->get_checkout_order_received_url()
 			],
 			WC()->template_path() . \WC_PAGARME_PIX_PAYMENT_DIR_NAME.'/',
 			WC_PAGARME_PIX_PAYMENT_PLUGIN_PATH . 'templates/emails/'
