@@ -5,7 +5,7 @@ Tags: woocommerce, automatico, payment, pix, e-commerce, shop, ecommerce, pagame
 Requires at least: 4.0
 Requires PHP: 7.0
 Tested up to: 5.9.2
-Stable tag: 1.5.1
+Stable tag: 1.5.2
 License: GPLv2 or later
 Language: pt_BR
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -41,7 +41,7 @@ Muitas vezes a opção de receber PIX pela Pagar.me vem desativada por padrão, 
 
 Compativel com a última versão do Woocommerce.
 
-== 1.5.1 ==
+== 1.5.0 ==
 
 * Agora é possível criar desconto quando o método de pagamento for pix
 * Escolha entre desconto fixo ou Porcentagem
