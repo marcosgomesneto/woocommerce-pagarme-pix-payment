@@ -47,8 +47,8 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 			&& isset( $_GET['section'] )
 			&& $_GET['section'] == 'wc_pagarme_pix_payment_geteway'
 		){
-			$update_settings['read_notice'] = true;
 			$update_settings = get_option($this->get_option_key(), []);
+			$update_settings['read_notice'] = true;
 			$this->read_notice = true;
 			update_option( $this->get_option_key(), apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $update_settings ), 'yes' );
 		}
@@ -168,7 +168,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 					return;
 				}
 
-				if(!preg_match('/^[0-9]+([\,][0-9]{1,2})$/i', $apply_discount_amount)){
+				if( isset($apply_discount) && !preg_match('/^[0-9]+([\,][0-9]{1,2})$/i', $apply_discount_amount)){
 					WC_Admin_Settings::add_error( __('O desconto só poder ter números inteiros ou então separado por "," (vírgula) com até 2 casas decimais: ex: 10 ou 5,80', \WC_PAGARME_PIX_PAYMENT_DIR_NAME) ); 
 					return;
 				}
