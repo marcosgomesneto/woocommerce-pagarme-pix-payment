@@ -2,17 +2,15 @@
 namespace WCPagarmePixPayment\Pagarme;
 
 use chillerlan\QRCode\QRCode;
-/**
- * Pagarme API Integration class
- */
-class PagarmeApi {
+
+abstract class PagarmeApi {
 
 	/**
 	 * API URL.
 	 *
 	 * @var string
 	 */
-	protected $api_url = 'https://api.pagar.me/1/';
+	protected $api_url;
 
 	/**
 	 * Gateway class.
@@ -28,101 +26,6 @@ class PagarmeApi {
 	 */
 	public function get_api_url() {
 		return $this->api_url;
-	}
-
-	/**
-	 * Constructor.
-	 *
-	 * @param WC_Payment_Gateway $gateway Gateway instance.
-	 */
-	public function __construct( $gateway = null ) {
-		$this->gateway = $gateway;
-	}
-
-	/**
-	 * Do requests in the Pagar.me API.
-	 *
-	 * @param  string $endpoint API Endpoint.
-	 * @param  string $method   Request method.
-	 * @param  array  $data     Request data.
-	 * @param  array  $headers  Request headers.
-	 *
-	 * @return array            Request response.
-	 */
-	protected function do_request( $endpoint, $method = 'POST', $data = array(), $headers = array() ) {
-		$params = array(
-			'method'  => $method,
-			'timeout' => 60,
-		);
-
-		if ( ! empty( $data ) ) {
-			$params['body'] = $data;
-		}
-
-		// Pagar.me user-agent and api version.
-		$x_pagarme_useragent = 'wc-pagarme-pix-payment/' . WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION;
-
-		if ( defined( 'WC_VERSION' ) ) {
-			$x_pagarme_useragent .= ' woocommerce/' . WC_VERSION;
-		}
-
-		$x_pagarme_useragent .= ' wordpress/' . get_bloginfo( 'version' );
-		$x_pagarme_useragent .= ' php/' . phpversion();
-
-		$params['headers'] = [
-			'User-Agent' => $x_pagarme_useragent,
-			'X-PagarMe-User-Agent' => $x_pagarme_useragent,
-			'X-PagarMe-Version' => '2017-07-17',
-		];
-
-		if ( ! empty( $headers ) ) {
-			$params['headers'] = array_merge( $params['headers'], $headers );
-		}
-
-		return wp_safe_remote_post( $this->get_api_url() . $endpoint, $params );
-	}
-
-	/**
-	 * Do the transaction.
-	 *
-	 * @param  WC_Order $order Order data.
-	 * @param  array    $args  Transaction args.
-	 * @param  string   $token Checkout token.
-	 *
-	 * @return array           Response data.
-	 */
-	public function do_transaction( $order, $args, $token = '' ) {
-		if ( 'yes' === $this->gateway->debug ) {
-			$this->gateway->log->add( $this->gateway->id, 'Doing a transaction for order ' . $order->get_order_number() . '...' );
-		}
-
-		$endpoint = 'transactions';
-
-		$response = $this->do_request( $endpoint, 'POST', $args );
-
-		if ( is_wp_error( $response ) ) {
-			if ( 'yes' === $this->gateway->debug ) {
-				$this->gateway->log->add( $this->gateway->id, 'WP_Error in doing the transaction: ' . $response->get_error_message() );
-			}
-
-			return array();
-		} else {
-			$data = json_decode( $response['body'], true );
-
-			if ( isset( $data['errors'] ) ) {
-				if ( 'yes' === $this->gateway->debug ) {
-					$this->gateway->log->add( $this->gateway->id, 'Failed to make the transaction: ' . print_r( $response, true ) );
-				}
-
-				return $data;
-			}
-
-			if ( 'yes' === $this->gateway->debug ) {
-				$this->gateway->log->add( $this->gateway->id, 'Transaction completed successfully! The transaction response is: ' . print_r( $data, true ) );
-			}
-
-			return $data;
-		}
 	}
 
 	/**

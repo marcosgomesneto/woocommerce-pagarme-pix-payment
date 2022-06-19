@@ -3,7 +3,7 @@ namespace WCPagarmePixPayment\Gateway;
 
 use WC_Payment_Gateway;
 use WC_Logger;
-use WCPagarmePixPayment\Pagarme\PagarmeApi;
+use WCPagarmePixPayment\Pagarme\PagarmeApiV4;
 use WC_Admin_Settings;
 
 /**
@@ -34,7 +34,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		$this->setup_settings();
 
 		// Set the API.
-		$this->api = new PagarmeApi( $this );
+		$this->api = new PagarmeApiV4( $this );
 
 		// Active logs.
 		if ( 'yes' === $this->debug ) {
@@ -81,10 +81,11 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 				$api_key 			= filter_input( INPUT_POST, $this->get_field_name('api_key'), FILTER_SANITIZE_STRING );
 				$api_version 		= filter_input( INPUT_POST, $this->get_field_name('api_version'), FILTER_SANITIZE_STRING );
 				$encryption_key		= filter_input( INPUT_POST, $this->get_field_name('encryption_key'), FILTER_SANITIZE_STRING );
+				$secret_key		= filter_input( INPUT_POST, $this->get_field_name('secret_key'), FILTER_SANITIZE_STRING );
 				$debug				= filter_input( INPUT_POST, $this->get_field_name('debug'), FILTER_SANITIZE_STRING );
 				$after_paid_status	= filter_input( INPUT_POST, $this->get_field_name('after_paid_status'), FILTER_SANITIZE_STRING );
 
-				if( empty($api_key) || empty($encryption_key) || empty($title) || empty($api_version) ){
+				if( ( $api_version == 'v4' && ( empty($api_key) || empty($encryption_key) ) ) || empty($title) || empty($api_version) ){
 					WC_Admin_Settings::add_error( __('É preciso preencher a todos os campos', \WC_PAGARME_PIX_PAYMENT_DIR_NAME) ); 
 					return;
 				}
@@ -93,6 +94,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 				$update_settings['api_version'] 	= $api_version;
 				$update_settings['title'] 			= $title;
 				$update_settings['encryption_key'] 	= $encryption_key;
+				$update_settings['secret_key'] 	= $secret_key;
 				$update_settings['debug'] 			= isset($debug) ? 'yes' : 'no';
 				$update_settings['after_paid_status'] = $after_paid_status;
 			break;
@@ -211,7 +213,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 				'type'              => 'select',
 				'description'       => __( 'Insira a versão da API da pagar.me que você está usando', 'wc-pagarme-pix-payment' ),
 				'default'           => 'v4',
-				'options'           => array('v4' => 'v4 (01/09/2019)'),
+				'options'           => array('v4' => 'v4 (01/09/2019)', 'v5' => 'v5 (stable)'),
 				'custom_attributes' => array(
 					'required' => 'required',
 				),
@@ -232,6 +234,16 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 				'default'           => '',
 				'custom_attributes' => array(
 					'required' => 'required',
+				),
+			),
+      'secret_key' => array(
+				'title'             => __( 'Pagar.me Secret Key', 'wc-pagarme-pix-payment' ),
+				'type'              => 'text',
+				'description'       => sprintf( __( 'Insira a Chave Secreta. Caso você não saiba você pode obter em %s.%s', 'wc-pagarme-pix-payment' ), '<a href="https://dash.pagar.me/">' . __( 'Pagar.me Dashboard > Desenvolvimento > Chaves', 'wc-pagarme-pix-payment' ) . '</a>', WC()->api_request_url( $this->id ) ),
+				'default'           => '',
+        'placeholder'       => 'sk_##############',
+				'custom_attributes' => array(
+					
 				),
 			),
 			'after_paid_status' => array(
@@ -266,9 +278,10 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		$this->description    			= $this->get_option( 'description' );
 		$this->debug          			= $this->get_option( 'debug' );
 		$this->async          			= $this->get_option( 'async' );
-		$this->api_version        		= $this->get_option( 'api_version' );
+		$this->api_version        	= $this->get_option( 'api_version', 'v4' );
 		$this->api_key        			= $this->get_option( 'api_key' );
 		$this->encryption_key 			= $this->get_option( 'encryption_key' );
+		$this->secret_key 			    = $this->get_option( 'secret_key' );
 		$this->checkout_message 		= $this->get_option( 'checkout_message', "Ao finalizar a compra, iremos gerar o código Pix para pagamento.\r\n\r\nNosso sistema detecta automaticamente o pagamento sem precisar enviar comprovantes." );
 		$this->order_recived_message 	= $this->get_option( 'order_recived_message', '<h4 style="text-align: center;">Faça o pagamento para finalizar!</h4><p style="text-align: center;">Escaneie o código QR ou copie o código abaixo para fazer o PIX.<br>O sistema vai detectar automáticamente quando fizer a transferência.</p><p style="text-align: center;"><strong>Podemos demorar até 5 minutos para detectarmos o pagamento.</strong></p><p style="text-align: center;">[copy_button]</p><p style="text-align: center;">[qr_code]</p>' );
 		$this->thank_you_message 		= $this->get_option( 'thank_you_message', '<p style="text-align: center;">Sua transferência PIX foi confirmada!<br>O seu pedido já está sendo separado e logo será enviado para seu endereço.</p>' );

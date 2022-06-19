@@ -164,6 +164,13 @@ class Core {
 			array('jquery'), 
 			\WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION 
 		);
+
+		wp_enqueue_script( 
+			\WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME . '-settings', 
+			\WC_PAGARME_PIX_PAYMENT_PLUGIN_URL . 'assets/js/admin/settings.js', 
+			array('jquery'), 
+			\WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION 
+		);
 		
 		wp_enqueue_style( 
 			'colpick', 
