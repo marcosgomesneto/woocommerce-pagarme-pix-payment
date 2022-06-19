@@ -1,40 +1,33 @@
 version: '3.1'
 services:
   wordpress:
-    image: wordpress
+    build: .
     container_name: wordpress
     restart: always
     ports:
       - 8080:80
     environment:
       WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: user
-      WORDPRESS_DB_PASSWORD: password
-      WORDPRESS_DB_NAME: database
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
       WORDPRESS_TABLE_PREFIX: wp_
       WORDPRESS_CONFIG_EXTRA: 
       WORDPRESS_DEBUG: 1
     volumes:
       - wordpress:/var/www/html
-      #- .:/var/www/html/wp-content/plugins/wc-pagarme-pix-payment
+      - .:/var/www/html/wp-content/plugins/wc-pagarme-pix-payment
   db:
     image: mysql:5.7
     restart: always
     container_name: wordpress_db
     environment:
-      MYSQL_DATABASE: database
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
       MYSQL_RANDOM_ROOT_PASSWORD: '1'
     volumes:
       - db:/var/lib/mysql
-  phpmyadmin:
-    image: phpmyadmin
-    restart: always
-    ports:
-      - 8083:80
-    links:
-      - "db:database"
 volumes: 
   wordpress:
   db:
