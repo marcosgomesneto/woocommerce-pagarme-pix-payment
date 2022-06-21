@@ -12,7 +12,10 @@ services:
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
       WORDPRESS_TABLE_PREFIX: wp_
-      WORDPRESS_CONFIG_EXTRA: 
+      WORDPRESS_CONFIG_EXTRA: |
+        /* Multisite */
+        define('WP_DEBUG', true );
+        define('WP_DEBUG_LOG', true);
       WORDPRESS_DEBUG: 1
     volumes:
       - wordpress:/var/www/html
