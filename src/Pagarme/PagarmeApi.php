@@ -1,8 +1,5 @@
 <?php
 namespace WCPagarmePixPayment\Pagarme;
-
-use chillerlan\QRCode\QRCode;
-
 abstract class PagarmeApi {
 
 	/**
@@ -157,66 +154,19 @@ abstract class PagarmeApi {
 	 *
 	 * @return bool
 	 */
-	public function check_fingerprint( $ipn_response ) {
-		if ( isset( $ipn_response['id'] ) && isset( $ipn_response['current_status'] ) && isset( $ipn_response['fingerprint'] ) ) {
-			$fingerprint = sha1( $ipn_response['id'] . '#' . $this->gateway->api_key );
-
-			if ( $fingerprint === $ipn_response['fingerprint'] ) {
-				return true;
-			}
-		}
-
-		return false;
-	}
+	abstract public function check_fingerprint( $ipn_response );
 
 	/**
 	 * IPN handler.
 	 */
-	public function ipn_handler() {
-		@ob_clean();
-
-		if ( $this->gateway->is_debug() ) {
-			$this->gateway->log->add( $this->gateway->id, 'Retornou um POSTBACK' );
-		}
-
-		$ipn_response = ! empty( $_POST ) ? $_POST : false;
-
-		if ( $ipn_response && $this->check_fingerprint( $ipn_response ) ) {
-			header( 'HTTP/1.1 200 OK' );
-
-			$this->process_successful_ipn( $ipn_response );
-			exit;
-		} else {
-			wp_die( esc_html__( 'Pagar.me PIX Request Failure', 'wc-pagarme-pix-payment' ), '', array( 'response' => 401 ) );
-		}
-	}
+	abstract public function ipn_handler();
 
 	/**
 	 * Process successeful IPN requests.
 	 *
 	 * @param array $posted Posted data.
 	 */
-	public function process_successful_ipn( $posted ) {
-		global $wpdb;
-		$posted   = wp_unslash( $posted );
-
-		if ( $this->gateway->is_debug() ) {
-			$this->gateway->log->add( $this->gateway->id, 'Sucesso: ID = ' . $posted['id'] );
-			
-		}
-
-		
-		$order_id = absint( $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = '_wc_pagarme_pix_payment_transaction_id' AND meta_value = %d", $posted['id'] ) ) );
-		$order    = wc_get_order( $order_id );
-		$status   = sanitize_text_field( $posted['current_status'] );
-
-		if ( $order && $order->id === $order_id && $posted['transaction']['payment_method'] == 'pix' ) {
-			if ( $this->gateway->is_debug() ) {
-				$this->gateway->log->add( $this->gateway->id, print_r($posted, true) );
-			}
-			$this->process_order_status( $order, $status );
-		}
-	}
+	abstract public function process_successful_ipn( $posted );
 
 	/**
 	 * Process the order status.
@@ -237,6 +187,10 @@ abstract class PagarmeApi {
 				if ( ! in_array( $order->get_status(), array( 'processing', 'completed' ), true ) ) {
 					$order->add_order_note( __( 'Pagar.me PIX: Transação paga.', 'wc-pagarme-pix-payment' ) );
 				}
+
+        if ( $this->gateway->is_debug() ) {
+          $this->gateway->log->add( $this->gateway->id, 'UPDATING: order id ' .  $order->get_id() . ' to yes' );
+        }
 
 				update_post_meta( $order->get_id(), '_wc_pagarme_pix_payment_paid', 'yes' );
 				

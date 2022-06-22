@@ -153,4 +153,59 @@ class PagarmeApiV4 extends PagarmeApi
       );
     }
   }
+
+  public function check_fingerprint( $ipn_response ) {
+		if ( isset( $ipn_response['id'] ) && isset( $ipn_response['current_status'] ) && isset( $ipn_response['fingerprint'] ) ) {
+			$fingerprint = sha1( $ipn_response['id'] . '#' . $this->gateway->api_key );
+
+			if ( $fingerprint === $ipn_response['fingerprint'] ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+  public function process_successful_ipn( $posted ) {
+		global $wpdb;
+		$posted   = wp_unslash( $posted );
+
+		if ( $this->gateway->is_debug() ) {
+			$this->gateway->log->add( $this->gateway->id, 'Sucesso: ID = ' . $posted['id'] );
+			
+		}
+
+		
+		$order_id = absint( $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = '_wc_pagarme_pix_payment_transaction_id' AND meta_value = '%s'", $posted['id'] ) ) );
+		$order    = wc_get_order( $order_id );
+		$status   = sanitize_text_field( $posted['current_status'] );
+
+		if ( $order && $order->id === $order_id && $posted['transaction']['payment_method'] == 'pix' ) {
+			if ( $this->gateway->is_debug() ) {
+				$this->gateway->log->add( $this->gateway->id, print_r($posted, true) );
+			}
+			$this->process_order_status( $order, $status );
+		}
+	}
+
+  public function ipn_handler() {
+		@ob_clean();
+
+		if ( $this->gateway->is_debug() ) {
+			$this->gateway->log->add( $this->gateway->id, 'Retornou um POSTBACK' );
+      
+      $this->gateway->log->add( $this->gateway->id, 'Response' . print_r($_POST, true) );
+		}
+
+		$ipn_response = ! empty( $_POST ) ? $_POST : false;
+
+		if ( $ipn_response && $this->check_fingerprint( $ipn_response ) ) {
+			header( 'HTTP/1.1 200 OK' );
+
+			$this->process_successful_ipn( $ipn_response );
+			exit;
+		} else {
+			wp_die( esc_html__( 'Pagar.me PIX Request Failure', 'wc-pagarme-pix-payment' ), '', array( 'response' => 401 ) );
+		}
+	}
 }

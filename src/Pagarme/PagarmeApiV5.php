@@ -44,7 +44,7 @@ class PagarmeApiV5 extends PagarmeApi
         'name' => trim($order->billing_first_name . ' ' . $order->billing_last_name),
         'email' => $order->billing_email,
         'type' => 'individual',
-        'document' => '07292729908',
+        'document' => 'null',
       ],
       'payments' => [
         [
@@ -167,4 +167,61 @@ class PagarmeApiV5 extends PagarmeApi
       );
     }
   }
+
+  public function check_fingerprint( $ipn_response ) {
+		if ( isset( $ipn_response['id'] ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+  public function process_successful_ipn( $posted ) {
+		global $wpdb;
+		$posted   = wp_unslash( $posted );
+
+		if ( $this->gateway->is_debug() ) {
+			$this->gateway->log->add( $this->gateway->id, 'Sucesso: ID = ' . $posted['id'] );
+			$this->gateway->log->add( $this->gateway->id, 'Sucesso: OrderID = ' . $posted['data']['order']['id'] );	
+		}
+    
+		$order_id = absint( $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = '_wc_pagarme_pix_payment_transaction_id' AND meta_value = '%s'", $posted['data']['order']['id'] ) ) );
+		$order    = wc_get_order( $order_id );
+		$status   = sanitize_text_field( $posted['data']['status'] );
+
+		if ( $order && $order->get_id() === $order_id && $posted['data']['payment_method'] == 'pix' ) {
+     
+			if ( $this->gateway->is_debug() ) {
+				$this->gateway->log->add( $this->gateway->id, print_r($posted, true) );
+			}
+			$this->process_order_status( $order, $status );
+		}
+	}
+
+  public function ipn_handler() {
+		@ob_clean();
+
+    $post = file_get_contents('php://input');
+
+		if ( $this->gateway->is_debug() ) {
+			$this->gateway->log->add( $this->gateway->id, 'Retornou um POSTBACK' );
+      $this->gateway->log->add( $this->gateway->id, 'Response' . print_r($post, true) );
+		}
+
+		$ipn_response = ! empty( $post ) ? json_decode($post, true) : false;
+
+		if ( $ipn_response && $this->check_fingerprint( $ipn_response ) ) {
+			header( 'HTTP/1.1 200 OK' );
+
+			$this->process_successful_ipn( $ipn_response );
+
+      wp_send_json(array(
+        'success' => true,
+      ), 200);
+			exit;
+		} else {
+      
+			wp_die( esc_html__( 'Pagar.me PIX Request Failure', 'wc-pagarme-pix-payment' ), '', array( 'response' => 401 ) );
+		}
+	}
 }
