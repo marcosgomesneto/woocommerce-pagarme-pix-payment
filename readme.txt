@@ -4,13 +4,15 @@ Contributors: marcosgn
 Tags: woocommerce, automatico, payment, pix, e-commerce, shop, ecommerce, pagamento, pagarme, method
 Requires at least: 4.0
 Requires PHP: 7.0
-Tested up to: 5.9.2
-Stable tag: 1.5.2
+Tested up to: 6.0
+Stable tag: 2.0.0
 License: GPLv2 or later
 Language: pt_BR
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Pagamentos Pix com compensação automática, status do pedido é alterado automaticamente. ==
+
+** AGORA TAMBÉM DISPONÍVEL PARA V5 DA PAGARME **
 
 O Plugin gera um QR code para pagamento PIX na finalização da compra. O cliente só precisa clicar no botão "Copiar Código" e então ir no aplicativo do banco, entrar na opção "PIX Copia e Cola" e fazer o pagamento.
 
@@ -40,6 +42,10 @@ Para adicionar essas duas chaves nas configurações do nosso plugin é só ir n
 Muitas vezes a opção de receber PIX pela Pagar.me vem desativada por padrão, mas é bem simples de ativá-la, você pode entrar em contato com a Pagar.me pelo chat deles que eles liberam na mesma hora.
 
 Compativel com a última versão do Woocommerce.
+
+== 2.0.0 ==
+
+* Adicionada a compatibilidade com versão 5 da pagarme API
 
 == 1.5.0 ==
 

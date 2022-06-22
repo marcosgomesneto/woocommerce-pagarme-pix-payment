@@ -44,7 +44,6 @@ class PagarmeApiV5 extends PagarmeApi
         'name' => trim($order->billing_first_name . ' ' . $order->billing_last_name),
         'email' => $order->billing_email,
         'type' => 'individual',
-        'document' => 'null',
       ],
       'payments' => [
         [

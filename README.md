@@ -1,5 +1,7 @@
 # Pix Automático com Pagarme para WooCommerce #
 
+** AGORA TAMBÉM DISPONÍVEL PARA V5 e V4 DA PAGARME **
+
 O Plugin gera um QR code para pagamento PIX na finalização da compra. O cliente só precisa clicar no botão "Copiar Código" e então ir no aplicativo do banco, entrar na opção "PIX Copia e Cola" e fazer o pagamento.
 
 Quando ele terminar de pagar e voltar para o site, o plugin recebe a confirmação de pagamento e automaticamente uma animação é mostrada com a mensagem de "Pagamento Confirmado".
@@ -29,6 +31,9 @@ Muitas vezes a opção de receber PIX pela Pagar.me vem desativada por padrão, 
 
 Compativel com a última versão do Woocommerce.
 
+## 2.0.0 ##
+
+* Adicionada a compatibilidade com versão 5 da pagarme API
 ## 1.5.0 ##
 
 * Agora é possível criar desconto quando o método de pagamento for pix
