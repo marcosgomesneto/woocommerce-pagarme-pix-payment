@@ -152,6 +152,10 @@ class Core {
 		if( $this->is_pix_payment_page() ){
 			wp_enqueue_script( \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME, \WC_PAGARME_PIX_PAYMENT_PLUGIN_URL . 'assets/js/public/checkout.js', array( 'jquery' ), \WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION );
 		}
+
+    if( is_checkout() ) {
+      wp_enqueue_script( \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME, \WC_PAGARME_PIX_PAYMENT_PLUGIN_URL . 'assets/js/public/before-checkout.js', array( 'jquery' ), \WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION );
+    }
 	}
 
 	public function admin_enqueue_scripts($hook) {
@@ -161,6 +165,13 @@ class Core {
 		wp_enqueue_script( 
 			'colpick', 
 			\WC_PAGARME_PIX_PAYMENT_PLUGIN_URL . 'assets/js/admin/colpick/colpick.js', 
+			array('jquery'), 
+			\WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION 
+		);
+
+		wp_enqueue_script( 
+			\WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME . '-settings', 
+			\WC_PAGARME_PIX_PAYMENT_PLUGIN_URL . 'assets/js/admin/settings.js', 
 			array('jquery'), 
 			\WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION 
 		);

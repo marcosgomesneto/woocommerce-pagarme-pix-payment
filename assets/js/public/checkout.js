@@ -1,6 +1,5 @@
 jQuery(function ( $ ) {
 	'use strict';
-
     $( document.body ).on( 'click', '.copy-qr-code', function () {
         /* Get the text field */
         var tempInput = document.createElement("input");
