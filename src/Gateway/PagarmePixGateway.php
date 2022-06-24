@@ -19,12 +19,6 @@ class PagarmePixGateway extends WC_Payment_Gateway
    */
   public function __construct()
   {
-
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
-
-
     global $current_section;
 
     $this->id                   = 'wc_pagarme_pix_payment_geteway';
