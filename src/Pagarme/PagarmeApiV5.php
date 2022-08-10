@@ -118,6 +118,14 @@ class PagarmeApiV5 extends PagarmeApi
       $this->gateway->log->add($this->gateway->id, 'API PagarmePix: Init process payment');
     }
 
+    if( !is_plugin_active( 'woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php' ) ) {
+      wc_add_notice('O <strong>CPF é obrigatório</strong> para V5 da Pagarme, instale o plugin <strong>Brazilian Market on WooCommerce</strong> para ter o campo CPF no checkout.', 'error');
+      
+      return array(
+        'result' => 'fail',
+      );
+    }
+
     $data        = $this->generate_transaction_data($order);
     $transaction = $this->do_transaction($order, json_encode($data));
 

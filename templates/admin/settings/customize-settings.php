@@ -9,6 +9,11 @@ defined( 'ABSPATH' ) || exit;
         font-weight: normal;
         color: #646970;
     }
+    .mgn-flex{
+      display: flex;
+      height: 35px;
+      align-items: center;
+    }
     .colpick.colpick_full{
         z-index: 999;
     }
@@ -27,9 +32,10 @@ defined( 'ABSPATH' ) || exit;
 				<fieldset>
                 <svg
                     viewBox="0 0 47.999999 47.999999"
+                    id="imagePixSvg"
                     version="1.1"
-                    width="48"
-                    height="48"
+                    width="<?php echo esc_html($this->pix_icon_size);?>"
+                    height="<?php echo esc_html($this->pix_icon_size);?>"
                     xmlns="http://www.w3.org/2000/svg"
                     xmlns:svg="http://www.w3.org/2000/svg">
                 <path
@@ -45,13 +51,22 @@ defined( 'ABSPATH' ) || exit;
                     fill="<?php echo esc_html($this->pix_icon_color);?>"
                     class="pppix-c1" />
                 </svg>
-
+                <div class="mgn-flex">
+                    <input name="<?php echo esc_html( $this->get_field_name('pix_icon_size') ); ?>" id="rangeicon" type="range" min="4" max="128" value="<?php echo esc_html($this->pix_icon_size);?>">
+                    <span id="rangeiconsize" style="margin-left: 10px;"><?php echo esc_html($this->pix_icon_size);?>px</span>
+                </div>
                 <div>
                     <button id="colorpicker" class="button">Mudar a cor</button>
                     <button id="colordefault" class="button">Cor padrão</button>
                 </div>
                 <input type="hidden" name="<?php echo esc_html( $this->get_field_name('pix_icon_color') ); ?>" value="<?php echo esc_html($this->pix_icon_color);?>">
                 <script>
+                    jQuery('#rangeicon').on('input',  function(value){
+                      const rangeValue = jQuery(this).val();
+                      jQuery('#imagePixSvg').width(rangeValue);
+                      jQuery('#imagePixSvg').height(rangeValue);
+                      jQuery('#rangeiconsize').html(rangeValue + 'px');
+                    });
                     jQuery('#colorpicker').colpick({onChange: function(c1,c2){
                         jQuery(".pppix-c1").css('fill', '#' + c2);
                         jQuery("input[name=<?php echo esc_html( $this->get_field_name('pix_icon_color') ); ?>]").val("#" + c2);
