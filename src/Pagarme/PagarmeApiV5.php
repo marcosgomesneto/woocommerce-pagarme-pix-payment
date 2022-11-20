@@ -57,10 +57,6 @@ class PagarmeApiV5 extends PagarmeApi
       ]
     );
 
-    if (!isset($order->billing_cellphone) && !empty($order->billing_phone)) {
-      wc_add_notice('O campo celular ou telefone é obrigatório.', 'error');
-      return null;
-    }
     // Cell Phone.
     if (isset($order->billing_cellphone) && !empty($order->billing_cellphone)) {
       $cellphone = $this->only_numbers($order->billing_cellphone);
@@ -81,6 +77,11 @@ class PagarmeApiV5 extends PagarmeApi
         'area_code' => substr($phone, 0, 2),
         'number'    => substr($phone, 2),
       );
+    }
+
+    if (!isset($data['customer']['phones']['home_phone']) && !isset($data['customer']['phones']['mobile_phone'])) {
+      wc_add_notice('É obrigatório preencher o campo celular ou campo telefone.', 'error');
+      return null;
     }
 
     // Set the document number.
