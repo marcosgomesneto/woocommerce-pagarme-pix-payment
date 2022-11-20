@@ -57,6 +57,10 @@ class PagarmeApiV5 extends PagarmeApi
       ]
     );
 
+    if (!isset($order->billing_cellphone) && !empty($order->billing_phone)) {
+      wc_add_notice('O campo celular ou telefone é obrigatório.', 'error');
+      return null;
+    }
     // Cell Phone.
     if (isset($order->billing_cellphone) && !empty($order->billing_cellphone)) {
       $cellphone = $this->only_numbers($order->billing_cellphone);
@@ -139,7 +143,14 @@ class PagarmeApiV5 extends PagarmeApi
       );
     }
 
-    $data        = $this->generate_transaction_data($order);
+    $data = $this->generate_transaction_data($order);
+
+    if ($data == null) {
+      return array(
+        'result' => 'fail',
+      );
+    }
+
     $transaction = $this->do_transaction($order, json_encode($data));
 
     if (isset($transaction['errors'])) {
