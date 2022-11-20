@@ -3,21 +3,23 @@
 namespace WCPagarmePixPayment\Pagarme;
 
 use chillerlan\QRCode\QRCode;
+
 class PagarmeApiV5 extends PagarmeApi
 {
   protected $api_url = 'https://api.pagar.me/core/v5/';
 
   protected $endpoint = 'orders/';
 
-  public function __construct( $gateway = null ) {
-		$this->gateway = $gateway;
-    
+  public function __construct($gateway = null)
+  {
+    $this->gateway = $gateway;
+
     $this->headers = [
       'Authorization' => 'Basic ' . base64_encode("{$gateway->secret_key}:"),
       'Content-Type' => 'application/json',
       'Accept' => 'application/json'
     ];
-	}
+  }
 
   /**
    * Generate the transaction data.
@@ -55,15 +57,31 @@ class PagarmeApiV5 extends PagarmeApi
       ]
     );
 
+    // Cell Phone.
+    if (isset($order->billing_cellphone) && !empty($order->billing_cellphone)) {
+      $cellphone = $this->only_numbers($order->billing_cellphone);
+
+      $data['customer']['phones']['mobile_phone'] = array(
+        'country_code' => '55',
+        'area_code' => substr($cellphone, 0, 2),
+        'number'    => substr($cellphone, 2),
+      );
+    }
+
     // Phone.
     if (!empty($order->billing_phone)) {
       $phone = $this->only_numbers($order->billing_phone);
 
-      $data['customer']['phones']['mobile_phone'] = array(
+      $data['customer']['phones']['home_phone'] = array(
         'country_code' => '55',
         'area_code' => substr($phone, 0, 2),
         'number'    => substr($phone, 2),
       );
+    }
+
+    if (!isset($data['customer']['phones']['home_phone']) && !isset($data['customer']['phones']['mobile_phone'])) {
+      wc_add_notice('É obrigatório preencher o campo celular ou campo telefone.', 'error');
+      return null;
     }
 
     // Set the document number.
@@ -118,15 +136,22 @@ class PagarmeApiV5 extends PagarmeApi
       $this->gateway->log->add($this->gateway->id, 'API PagarmePix: Init process payment');
     }
 
-    if( !is_plugin_active( 'woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php' ) ) {
+    if (!is_plugin_active('woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php')) {
       wc_add_notice('O <strong>CPF é obrigatório</strong> para V5 da Pagarme, instale o plugin <strong>Brazilian Market on WooCommerce</strong> para ter o campo CPF no checkout.', 'error');
-      
+
       return array(
         'result' => 'fail',
       );
     }
 
-    $data        = $this->generate_transaction_data($order);
+    $data = $this->generate_transaction_data($order);
+
+    if ($data == null) {
+      return array(
+        'result' => 'fail',
+      );
+    }
+
     $transaction = $this->do_transaction($order, json_encode($data));
 
     if (isset($transaction['errors'])) {
@@ -153,7 +178,7 @@ class PagarmeApiV5 extends PagarmeApi
 
         update_post_meta($order_id, '_wc_pagarme_pix_payment_qr_code_image', $upload_url . $qrcode_file_name);
       } else {
-        update_post_meta($order_id, '_wc_pagarme_pix_payment_qr_code_image', sprintf("%s", $transaction['charges'][0]['last_transaction']['qr_code_url'] ));
+        update_post_meta($order_id, '_wc_pagarme_pix_payment_qr_code_image', sprintf("%s", $transaction['charges'][0]['last_transaction']['qr_code_url']));
       }
 
       update_post_meta($order_id, '_wc_pagarme_pix_payment_qr_code', $transaction['charges'][0]['last_transaction']['qr_code']);
@@ -175,60 +200,63 @@ class PagarmeApiV5 extends PagarmeApi
     }
   }
 
-  public function check_fingerprint( $ipn_response ) {
-		if ( isset( $ipn_response['id'] ) ) {
-			return true;
-		}
+  public function check_fingerprint($ipn_response)
+  {
+    if (isset($ipn_response['id'])) {
+      return true;
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-  public function process_successful_ipn( $posted ) {
-		global $wpdb;
-		$posted   = wp_unslash( $posted );
+  public function process_successful_ipn($posted)
+  {
+    global $wpdb;
+    $posted   = wp_unslash($posted);
 
-		if ( $this->gateway->is_debug() ) {
-			$this->gateway->log->add( $this->gateway->id, 'Sucesso: ID = ' . $posted['id'] );
-			$this->gateway->log->add( $this->gateway->id, 'Sucesso: OrderID = ' . $posted['data']['order']['id'] );	
-		}
-    
-		$order_id = absint( $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = '_wc_pagarme_pix_payment_transaction_id' AND meta_value = '%s'", $posted['data']['order']['id'] ) ) );
-		$order    = wc_get_order( $order_id );
-		$status   = sanitize_text_field( $posted['data']['status'] );
+    if ($this->gateway->is_debug()) {
+      $this->gateway->log->add($this->gateway->id, 'Sucesso: ID = ' . $posted['id']);
+      $this->gateway->log->add($this->gateway->id, 'Sucesso: OrderID = ' . $posted['data']['order']['id']);
+    }
 
-		if ( $order && $order->get_id() === $order_id && $posted['data']['payment_method'] == 'pix' ) {
-     
-			if ( $this->gateway->is_debug() ) {
-				$this->gateway->log->add( $this->gateway->id, print_r($posted, true) );
-			}
-			$this->process_order_status( $order, $status );
-		}
-	}
+    $order_id = absint($wpdb->get_var($wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key = '_wc_pagarme_pix_payment_transaction_id' AND meta_value = '%s'", $posted['data']['order']['id'])));
+    $order    = wc_get_order($order_id);
+    $status   = sanitize_text_field($posted['data']['status']);
 
-  public function ipn_handler() {
-		@ob_clean();
+    if ($order && $order->get_id() === $order_id && $posted['data']['payment_method'] == 'pix') {
+
+      if ($this->gateway->is_debug()) {
+        $this->gateway->log->add($this->gateway->id, print_r($posted, true));
+      }
+      $this->process_order_status($order, $status);
+    }
+  }
+
+  public function ipn_handler()
+  {
+    @ob_clean();
 
     $post = file_get_contents('php://input');
 
-		if ( $this->gateway->is_debug() ) {
-			$this->gateway->log->add( $this->gateway->id, 'Retornou um POSTBACK' );
-      $this->gateway->log->add( $this->gateway->id, 'Response' . print_r($post, true) );
-		}
+    if ($this->gateway->is_debug()) {
+      $this->gateway->log->add($this->gateway->id, 'Retornou um POSTBACK');
+      $this->gateway->log->add($this->gateway->id, 'Response' . print_r($post, true));
+    }
 
-		$ipn_response = ! empty( $post ) ? json_decode($post, true) : false;
+    $ipn_response = !empty($post) ? json_decode($post, true) : false;
 
-		if ( $ipn_response && $this->check_fingerprint( $ipn_response ) ) {
-			header( 'HTTP/1.1 200 OK' );
+    if ($ipn_response && $this->check_fingerprint($ipn_response)) {
+      header('HTTP/1.1 200 OK');
 
-			$this->process_successful_ipn( $ipn_response );
+      $this->process_successful_ipn($ipn_response);
 
       wp_send_json(array(
         'success' => true,
       ), 200);
-			exit;
-		} else {
-      
-			wp_die( esc_html__( 'Pagar.me PIX Request Failure', 'wc-pagarme-pix-payment' ), '', array( 'response' => 401 ) );
-		}
-	}
+      exit;
+    } else {
+
+      wp_die(esc_html__('Pagar.me PIX Request Failure', 'wc-pagarme-pix-payment'), '', array('response' => 401));
+    }
+  }
 }

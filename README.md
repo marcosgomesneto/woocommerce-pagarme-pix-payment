@@ -31,6 +31,11 @@ Muitas vezes a opção de receber PIX pela Pagar.me vem desativada por padrão, 
 
 Compativel com a última versão do Woocommerce.
 
+## 2.0.4 ##
+
+* Correção do campo celular para pagarme V5
+* Correções de Bugs
+
 ## 2.0.3 ##
 
 * Agora é possível alterar o tamanho do Icone
