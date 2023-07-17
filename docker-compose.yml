@@ -1,5 +1,13 @@
-version: '3.1'
+version: "3.1"
 services:
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin
+    ports:
+      - 8081:80
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOST: db-iabets-prd-cluster.coel50q1pqpk.us-east-1.rds.amazonaws.com
   wordpress:
     build: .
     container_name: wordpress
@@ -30,9 +38,9 @@ services:
       MYSQL_DATABASE: wordpress
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: wordpress
-      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+      MYSQL_RANDOM_ROOT_PASSWORD: "1"
     volumes:
       - db:/var/lib/mysql
-volumes: 
+volumes:
   wordpress:
   db:

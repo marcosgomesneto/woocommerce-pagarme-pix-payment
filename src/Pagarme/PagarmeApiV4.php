@@ -36,7 +36,7 @@ class PagarmeApiV4 extends PagarmeApi
       'api_key'            => $this->gateway->api_key,
       'payment_method'    => 'pix',
       'pix_expiration_date'   => date('Y-m-d H:i:s', strtotime('+' . $this->gateway->expiration_days . ' days ' . $this->gateway->expiration_hours . ' hours', current_time('timestamp'))),
-      'amount'             => $order->get_total() * 100,
+      'amount'             => round($order->get_total() * 100),
       'postback_url'       => WC()->api_request_url($this->gateway->id),
       'customer'           => array(
         'name'        => trim($order->billing_first_name . ' ' . $order->billing_last_name),
@@ -106,6 +106,12 @@ class PagarmeApiV4 extends PagarmeApi
     }
 
     $data        = $this->generate_transaction_data($order);
+
+    if ($this->gateway->is_debug()) {
+      $this->gateway->log->add($this->gateway->id, 'API PagarmePix: Send pagarme data:' . print_r( $data, true ));
+    }
+
+    
     $transaction = $this->do_transaction($order, $data);
 
     if (isset($transaction['errors'])) {

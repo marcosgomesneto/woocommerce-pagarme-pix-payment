@@ -37,7 +37,7 @@ class PagarmeApiV5 extends PagarmeApi
       ],
       'items' => [
         [
-          'amount' => $order->get_total() * 100,
+          'amount' => round($order->get_total() * 100),
           'description' => 'WCPagarmePixPayment',
           'quantity' => 1
         ]
@@ -145,6 +145,10 @@ class PagarmeApiV5 extends PagarmeApi
     }
 
     $data = $this->generate_transaction_data($order);
+
+    if ($this->gateway->is_debug()) {
+      $this->gateway->log->add($this->gateway->id, 'API PagarmePix: Send pagarme data:' . print_r( $data, true ));
+    }
 
     if ($data == null) {
       return array(

@@ -85,6 +85,11 @@ abstract class PagarmeApi {
 
     $params['headers'] = array_merge( $params['headers'], $this->headers, $headers );
 
+    if ($this->gateway->is_debug()) {
+      $this->gateway->log->add( $this->gateway->id, sprintf("Send Safe Post Request to: %s%s", $this->get_api_url(), $endpoint) );
+      $this->gateway->log->add( $this->gateway->id, sprintf("Params to send: %s", print_r( $params, true ) ) );
+    }
+
 		return wp_safe_remote_post( $this->get_api_url() . $endpoint, $params );
 	}
 
@@ -103,6 +108,10 @@ abstract class PagarmeApi {
 		}
 
 		$response = $this->do_request( $this->endpoint, 'POST', $args );
+
+    if ($this->gateway->is_debug()) {
+      $this->gateway->log->add( $this->gateway->id, sprintf("Response Pagar.me: %s", print_r( $response, true ) ) );
+    }
 
 		if ( is_wp_error( $response ) ) {
 			if ( 'yes' === $this->gateway->debug ) {

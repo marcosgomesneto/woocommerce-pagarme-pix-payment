@@ -31,6 +31,14 @@ Muitas vezes a opção de receber PIX pela Pagar.me vem desativada por padrão, 
 
 Compativel com a última versão do Woocommerce.
 
+## 2.0.8 ##
+
+* Correção do Bug de número quebrado que estava dando erro ao finalizar compra
+
+## 2.0.5 ##
+
+* Add Debug Logs
+
 ## 2.0.4 ##
 
 * Correção do campo celular para pagarme V5
