@@ -54,7 +54,8 @@ class PagarmeApiV5 extends PagarmeApi
             'expires_at' => date('Y-m-d H:i:s', strtotime('+' . $this->gateway->expiration_days . ' days ' . $this->gateway->expiration_hours . ' hours', current_time('timestamp'))),
           ]
         ]
-      ]
+      ],
+      'code' =>  $order->get_id()
     );
 
     // Cell Phone.
@@ -147,7 +148,7 @@ class PagarmeApiV5 extends PagarmeApi
     $data = $this->generate_transaction_data($order);
 
     if ($this->gateway->is_debug()) {
-      $this->gateway->log->add($this->gateway->id, 'API PagarmePix: Send pagarme data:' . print_r( $data, true ));
+      $this->gateway->log->add($this->gateway->id, 'API PagarmePix: Send pagarme data:' . print_r($data, true));
     }
 
     if ($data == null) {

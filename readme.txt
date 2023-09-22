@@ -4,8 +4,8 @@ Contributors: marcosgn
 Tags: woocommerce, automatico, payment, pix, e-commerce, shop, ecommerce, pagamento, pagarme, method
 Requires at least: 4.0
 Requires PHP: 7.0
-Tested up to: 6.2
-Stable tag: 2.0.8
+Tested up to: 6.3
+Stable tag: 2.0.9
 License: GPLv2 or later
 Language: pt_BR
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -42,6 +42,11 @@ Para adicionar essas duas chaves nas configurações do nosso plugin é só ir n
 Muitas vezes a opção de receber PIX pela Pagar.me vem desativada por padrão, mas é bem simples de ativá-la, você pode entrar em contato com a Pagar.me pelo chat deles que eles liberam na mesma hora.
 
 Compativel com a última versão do Woocommerce.
+
+== 2.0.9 ==
+
+* Adicionado informações de pagamento dentro do detalhe do pedido (caso o cliente saia da tela do pagamento)
+* Corrigido Pedidos Vazios gerados quando é usado o plugin em conjunto com o Oficial da pagar.me
 
 == 2.0.8 ==
 
