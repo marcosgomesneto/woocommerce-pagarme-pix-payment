@@ -1,6 +1,8 @@
 <?php
 namespace WCPagarmePixPayment\Pagarme;
-abstract class PagarmeApi {
+
+abstract class PagarmeApi
+{
 
 	/**
 	 * API URL.
@@ -21,21 +23,22 @@ abstract class PagarmeApi {
 	 *
 	 * @var string
 	 */
-  protected $endpoint;
+	protected $endpoint;
 
-  /**
+	/**
 	 * Request Header Parameters.
 	 *
 	 * @var string
 	 */
-  protected $headers = array();
+	protected $headers = array();
 
 	/**
 	 * Get API URL.
 	 *
 	 * @return string
 	 */
-	public function get_api_url() {
+	public function get_api_url()
+	{
 		return $this->api_url;
 	}
 
@@ -44,7 +47,8 @@ abstract class PagarmeApi {
 	 *
 	 * @param WC_Payment_Gateway $gateway Gateway instance.
 	 */
-	public function __construct( $gateway = null ) {
+	public function __construct($gateway = null)
+	{
 		$this->gateway = $gateway;
 	}
 
@@ -58,24 +62,25 @@ abstract class PagarmeApi {
 	 *
 	 * @return array            Request response.
 	 */
-	protected function do_request( $endpoint, $method = 'POST', $data = array(), $headers = array() ) {
+	protected function do_request($endpoint, $method = 'POST', $data = array(), $headers = array())
+	{
 		$params = array(
-			'method'  => $method,
+			'method' => $method,
 			'timeout' => 60,
 		);
 
-		if ( ! empty( $data ) ) {
+		if (!empty($data)) {
 			$params['body'] = $data;
 		}
 
 		// Pagar.me user-agent and api version.
 		$x_pagarme_useragent = 'wc-pagarme-pix-payment/' . WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION;
 
-		if ( defined( 'WC_VERSION' ) ) {
+		if (defined('WC_VERSION')) {
 			$x_pagarme_useragent .= ' woocommerce/' . WC_VERSION;
 		}
 
-		$x_pagarme_useragent .= ' wordpress/' . get_bloginfo( 'version' );
+		$x_pagarme_useragent .= ' wordpress/' . get_bloginfo('version');
 		$x_pagarme_useragent .= ' php/' . phpversion();
 
 		$params['headers'] = [
@@ -83,14 +88,14 @@ abstract class PagarmeApi {
 			'X-PagarMe-User-Agent' => $x_pagarme_useragent,
 		];
 
-    $params['headers'] = array_merge( $params['headers'], $this->headers, $headers );
+		$params['headers'] = array_merge($params['headers'], $this->headers, $headers);
 
-    if ($this->gateway->is_debug()) {
-      $this->gateway->log->add( $this->gateway->id, sprintf("Send Safe Post Request to: %s%s", $this->get_api_url(), $endpoint) );
-      $this->gateway->log->add( $this->gateway->id, sprintf("Params to send: %s", print_r( $params, true ) ) );
-    }
+		if ($this->gateway->is_debug()) {
+			$this->gateway->log->add($this->gateway->id, sprintf("Send Safe Post Request to: %s%s", $this->get_api_url(), $endpoint));
+			$this->gateway->log->add($this->gateway->id, sprintf("Params to send: %s", print_r($params, true)));
+		}
 
-		return wp_safe_remote_post( $this->get_api_url() . $endpoint, $params );
+		return wp_safe_remote_post($this->get_api_url() . $endpoint, $params);
 	}
 
 	/**
@@ -102,36 +107,37 @@ abstract class PagarmeApi {
 	 *
 	 * @return array           Response data.
 	 */
-	public function do_transaction( $order, $args, $token = '' ) {
-		if ( 'yes' === $this->gateway->debug ) {
-			$this->gateway->log->add( $this->gateway->id, 'Doing a transaction for order ' . $order->get_order_number() . '...' );
+	public function do_transaction($order, $args, $token = '')
+	{
+		if ('yes' === $this->gateway->debug) {
+			$this->gateway->log->add($this->gateway->id, 'Doing a transaction for order ' . $order->get_order_number() . '...');
 		}
 
-		$response = $this->do_request( $this->endpoint, 'POST', $args );
+		$response = $this->do_request($this->endpoint, 'POST', $args);
 
-    if ($this->gateway->is_debug()) {
-      $this->gateway->log->add( $this->gateway->id, sprintf("Response Pagar.me: %s", print_r( $response, true ) ) );
-    }
+		if ($this->gateway->is_debug()) {
+			$this->gateway->log->add($this->gateway->id, sprintf("Response Pagar.me: %s", print_r($response, true)));
+		}
 
-		if ( is_wp_error( $response ) ) {
-			if ( 'yes' === $this->gateway->debug ) {
-				$this->gateway->log->add( $this->gateway->id, 'WP_Error in doing the transaction: ' . $response->get_error_message() );
+		if (is_wp_error($response)) {
+			if ('yes' === $this->gateway->debug) {
+				$this->gateway->log->add($this->gateway->id, 'WP_Error in doing the transaction: ' . $response->get_error_message());
 			}
 
 			return array();
 		} else {
-			$data = json_decode( $response['body'], true );
+			$data = json_decode($response['body'], true);
 
-			if ( isset( $data['errors'] ) ) {
-				if ( 'yes' === $this->gateway->debug ) {
-					$this->gateway->log->add( $this->gateway->id, 'Failed to make the transaction: ' . print_r( $response, true ) );
+			if (isset($data['errors'])) {
+				if ('yes' === $this->gateway->debug) {
+					$this->gateway->log->add($this->gateway->id, 'Failed to make the transaction: ' . print_r($response, true));
 				}
 
 				return $data;
 			}
 
-			if ( 'yes' === $this->gateway->debug ) {
-				$this->gateway->log->add( $this->gateway->id, 'Transaction completed successfully! The transaction response is: ' . print_r( $data, true ) );
+			if ('yes' === $this->gateway->debug) {
+				$this->gateway->log->add($this->gateway->id, 'Transaction completed successfully! The transaction response is: ' . print_r($data, true));
 			}
 
 			return $data;
@@ -145,7 +151,7 @@ abstract class PagarmeApi {
 	 *
 	 * @return array            Transaction data.
 	 */
-	abstract public function generate_transaction_data( $order );
+	abstract public function generate_transaction_data($order);
 
 	/**
 	 * Process regular payment.
@@ -154,7 +160,7 @@ abstract class PagarmeApi {
 	 *
 	 * @return array Redirect data.
 	 */
-	abstract public function process_regular_payment( $order_id );
+	abstract public function process_regular_payment($order_id);
 
 	/**
 	 * Check if Pagar.me response is validity.
@@ -163,7 +169,7 @@ abstract class PagarmeApi {
 	 *
 	 * @return bool
 	 */
-	abstract public function check_fingerprint( $ipn_response );
+	abstract public function check_fingerprint($ipn_response);
 
 	/**
 	 * IPN handler.
@@ -175,7 +181,7 @@ abstract class PagarmeApi {
 	 *
 	 * @param array $posted Posted data.
 	 */
-	abstract public function process_successful_ipn( $posted );
+	abstract public function process_successful_ipn($posted);
 
 	/**
 	 * Process the order status.
@@ -183,37 +189,38 @@ abstract class PagarmeApi {
 	 * @param WC_Order $order  Order data.
 	 * @param string   $status Transaction status.
 	 */
-	public function process_order_status( $order, $status ) {
-		if ( $this->gateway->is_debug() ) {
-			$this->gateway->log->add( $this->gateway->id, 'PIX: Payment status for order ' . $order->get_order_number() . ' is now: ' . $status );
+	public function process_order_status($order, $status)
+	{
+		if ($this->gateway->is_debug()) {
+			$this->gateway->log->add($this->gateway->id, 'PIX: Payment status for order ' . $order->get_order_number() . ' is now: ' . $status);
 		}
 
-		switch ( $status ) {
-			case 'waiting_payment' :
-				$order->update_status( 'on-hold', __( 'Aguardando pagamento via PIX.', 'wc-pagarme-pix-payment' ) );
+		switch ($status) {
+			case 'waiting_payment':
+				$order->update_status('on-hold', __('Aguardando pagamento via PIX.', 'wc-pagarme-pix-payment'));
 				break;
-			case 'paid' :
-				if ( ! in_array( $order->get_status(), array( 'processing', 'completed' ), true ) ) {
-					$order->add_order_note( __( 'Pagar.me PIX: Transação paga.', 'wc-pagarme-pix-payment' ) );
+			case 'paid':
+				if (!in_array($order->get_status(), array('processing', 'completed'), true)) {
+					$order->add_order_note(__('Pagar.me PIX: Transação paga.', 'wc-pagarme-pix-payment'));
 				}
 
-        if ( $this->gateway->is_debug() ) {
-          $this->gateway->log->add( $this->gateway->id, 'UPDATING: order id ' .  $order->get_id() . ' to yes' );
-        }
+				if ($this->gateway->is_debug()) {
+					$this->gateway->log->add($this->gateway->id, 'UPDATING: order id ' . $order->get_id() . ' to yes');
+				}
 
-				update_post_meta( $order->get_id(), '_wc_pagarme_pix_payment_paid', 'yes' );
-				
+				update_post_meta($order->get_id(), '_wc_pagarme_pix_payment_paid', 'yes');
+
 				// Changing the order for processing and reduces the stock.
 				$order->payment_complete();
-				
+
 				$after_paid_status = $this->gateway->after_paid_status;
 
-				if( $after_paid_status != 'wc-processing' ){
+				if ($after_paid_status != 'wc-processing') {
 					$statuses = wc_get_order_statuses();
-					$order->update_status( $after_paid_status, __( sprintf('Pagar.me PIX: Pedido alterado para %s.', $statuses[$after_paid_status]) ));
+					$order->update_status($after_paid_status, __(sprintf('Pagar.me PIX: Pedido alterado para %s.', $statuses[$after_paid_status])));
 				}
 				break;
-			default :
+			default:
 				break;
 		}
 	}
@@ -225,7 +232,43 @@ abstract class PagarmeApi {
 	 *
 	 * @return string|int
 	 */
-	protected function only_numbers( $string ) {
-		return preg_replace( '([^0-9])', '', $string );
+	protected function only_numbers($string)
+	{
+		return preg_replace('([^0-9])', '', $string);
+	}
+
+	/**
+	 * CPF Validator.
+	 *
+	 * @param string
+	 *
+	 * @return bool
+	 */
+	protected function cpfValidator($cpf)
+	{
+		// Extrai somente os números
+		$cpf = preg_replace('/[^0-9]/is', '', $cpf);
+
+		// Verifica se foi informado todos os digitos corretamente
+		if (strlen($cpf) != 11) {
+			return false;
+		}
+
+		// Verifica se foi informada uma sequência de digitos repetidos. Ex: 111.111.111-11
+		if (preg_match('/(\d)\1{10}/', $cpf)) {
+			return false;
+		}
+
+		// Faz o calculo para validar o CPF
+		for ($t = 9; $t < 11; $t++) {
+			for ($d = 0, $c = 0; $c < $t; $c++) {
+				$d += $cpf[$c] * (($t + 1) - $c);
+			}
+			$d = ((10 * $d) % 11) % 10;
+			if ($cpf[$c] != $d) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

@@ -32,6 +32,10 @@ Muitas vezes a opção de receber PIX pela Pagar.me vem desativada por padrão, 
 
 Compativel com a última versão do Woocommerce.
 
+## 2.1.0
+
+- Validação de CPF
+
 ## 2.0.9
 
 - Adicionado informações de pagamento dentro do detalhe do pedido (caso o cliente saia da tela do pagamento)

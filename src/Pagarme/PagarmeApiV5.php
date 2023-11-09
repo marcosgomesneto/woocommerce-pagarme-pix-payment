@@ -26,7 +26,7 @@ class PagarmeApiV5 extends PagarmeApi
    *
    * @param  WC_Order $order  Order data.
    *
-   * @return array            Transaction data.
+   * @return array|null Transaction data.
    */
   public function generate_transaction_data($order)
   {
@@ -55,7 +55,7 @@ class PagarmeApiV5 extends PagarmeApi
           ]
         ]
       ],
-      'code' =>  $order->get_id()
+      'code' => $order->get_id()
     );
 
     // Cell Phone.
@@ -65,7 +65,7 @@ class PagarmeApiV5 extends PagarmeApi
       $data['customer']['phones']['mobile_phone'] = array(
         'country_code' => '55',
         'area_code' => substr($cellphone, 0, 2),
-        'number'    => substr($cellphone, 2),
+        'number' => substr($cellphone, 2),
       );
     }
 
@@ -76,7 +76,7 @@ class PagarmeApiV5 extends PagarmeApi
       $data['customer']['phones']['home_phone'] = array(
         'country_code' => '55',
         'area_code' => substr($phone, 0, 2),
-        'number'    => substr($phone, 2),
+        'number' => substr($phone, 2),
       );
     }
 
@@ -85,12 +85,21 @@ class PagarmeApiV5 extends PagarmeApi
       return null;
     }
 
+    if ($order->billing_cpf == null && $order->billing_cnpj == null) {
+      wc_add_notice('É obrigatório preencher o campo CPF para pagamento em PIX.', 'error');
+      return null;
+    }
+
     // Set the document number.
     if (class_exists('Extra_Checkout_Fields_For_Brazil')) {
       $wcbcf_settings = get_option('wcbcf_settings');
-      $person_type    = (string) $wcbcf_settings['person_type'];
+      $person_type = (string) $wcbcf_settings['person_type'];
       if ('0' !== $person_type) {
         if (('1' === $person_type && '1' === $order->billing_persontype) || '2' === $person_type) {
+          if (!$this->cpfValidator($order->billing_cpf)) {
+            wc_add_notice('CPF Inválido.', 'error');
+            return null;
+          }
           $data['customer']['document'] = $this->only_numbers($order->billing_cpf);
           $data['customer']['type'] = 'individual';
           $data['customer']['document_type'] = 'CPF';
@@ -105,6 +114,10 @@ class PagarmeApiV5 extends PagarmeApi
       }
     } else {
       if (!empty($order->billing_cpf)) {
+        if (!$this->cpfValidator($order->billing_cpf)) {
+          wc_add_notice('CPF Inválido.', 'error');
+          return null;
+        }
         $data['customer']['document'] = $this->only_numbers($order->billing_cpf);
       }
       if (!empty($order->billing_cnpj)) {
@@ -199,7 +212,7 @@ class PagarmeApiV5 extends PagarmeApi
 
       // Redirect to thanks page.
       return array(
-        'result'   => 'success',
+        'result' => 'success',
         'redirect' => $this->gateway->get_return_url($order),
       );
     }
@@ -217,7 +230,7 @@ class PagarmeApiV5 extends PagarmeApi
   public function process_successful_ipn($posted)
   {
     global $wpdb;
-    $posted   = wp_unslash($posted);
+    $posted = wp_unslash($posted);
 
     if ($this->gateway->is_debug()) {
       $this->gateway->log->add($this->gateway->id, 'Sucesso: ID = ' . $posted['id']);
@@ -225,8 +238,8 @@ class PagarmeApiV5 extends PagarmeApi
     }
 
     $order_id = absint($wpdb->get_var($wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key = '_wc_pagarme_pix_payment_transaction_id' AND meta_value = '%s'", $posted['data']['order']['id'])));
-    $order    = wc_get_order($order_id);
-    $status   = sanitize_text_field($posted['data']['status']);
+    $order = wc_get_order($order_id);
+    $status = sanitize_text_field($posted['data']['status']);
 
     if ($order && $order->get_id() === $order_id && $posted['data']['payment_method'] == 'pix') {
 
@@ -255,9 +268,12 @@ class PagarmeApiV5 extends PagarmeApi
 
       $this->process_successful_ipn($ipn_response);
 
-      wp_send_json(array(
-        'success' => true,
-      ), 200);
+      wp_send_json(
+        array(
+          'success' => true,
+        ),
+        200
+      );
       exit;
     } else {
 
