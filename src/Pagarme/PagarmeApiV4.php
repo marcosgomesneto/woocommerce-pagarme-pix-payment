@@ -150,16 +150,18 @@ class PagarmeApiV4 extends PagarmeApi
         $qrcode_file_name = date('Ymd', strtotime(current_time('mysql'))) . $transaction['id'] . '.png';
         (new QRCode)->render($transaction['pix_qr_code'], $upload_folder . $qrcode_file_name);
 
-        update_post_meta($order_id, '_wc_pagarme_pix_payment_qr_code_image', $upload_url . $qrcode_file_name);
+        $order->update_meta_data('_wc_pagarme_pix_payment_qr_code_image', $upload_url . $qrcode_file_name);
       } else {
-        update_post_meta($order_id, '_wc_pagarme_pix_payment_qr_code_image', sprintf("https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=%s&choe=UTF-8", urlencode($transaction['pix_qr_code'])));
+        $order->update_meta_data('_wc_pagarme_pix_payment_qr_code_image', sprintf("https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=%s&choe=UTF-8", urlencode($transaction['pix_qr_code'])));
       }
 
-      update_post_meta($order_id, '_wc_pagarme_pix_payment_qr_code', $transaction['pix_qr_code']);
-      update_post_meta($order_id, '_wc_pagarme_pix_payment_expiration_date', date('Y-m-d H:i:s', strtotime('+' . $this->gateway->expiration_days . ' days ' . $this->gateway->expiration_hours . ' hours', current_time('timestamp'))));
-      update_post_meta($order_id, '_wc_pagarme_pix_payment_expiration_days', $this->gateway->expiration_days);
-      update_post_meta($order_id, '_wc_pagarme_pix_payment_transaction_id', $transaction['id']);
-      update_post_meta($order_id, '_wc_pagarme_pix_payment_paid', 'no');
+      $order->update_meta_data('_wc_pagarme_pix_payment_qr_code', $transaction['pix_qr_code']);
+      $order->update_meta_data('_wc_pagarme_pix_payment_expiration_date', date('Y-m-d H:i:s', strtotime('+' . $this->gateway->expiration_days . ' days ' . $this->gateway->expiration_hours . ' hours', current_time('timestamp'))));
+      $order->update_meta_data('_wc_pagarme_pix_payment_expiration_days', $this->gateway->expiration_days);
+      $order->update_meta_data('_wc_pagarme_pix_payment_transaction_id', $transaction['id']);
+      $order->update_meta_data('_wc_pagarme_pix_payment_paid', 'no');
+
+      $order->save();
 
       $this->process_order_status($order, $transaction['status']);
 
@@ -189,7 +191,6 @@ class PagarmeApiV4 extends PagarmeApi
 
   public function process_successful_ipn($posted)
   {
-    global $wpdb;
     $posted = wp_unslash($posted);
 
     if ($this->gateway->is_debug()) {
@@ -197,12 +198,24 @@ class PagarmeApiV4 extends PagarmeApi
 
     }
 
+    $args = array(
+      'limit' => 1,
+      'meta_key' => '_wc_pagarme_pix_payment_transaction_id',
+      'meta_value' => $posted['id'],
+      'meta_compare' => '=',
+    );
 
-    $order_id = absint($wpdb->get_var($wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key = '_wc_pagarme_pix_payment_transaction_id' AND meta_value = '%s'", $posted['id'])));
-    $order = wc_get_order($order_id);
+    $orders = wc_get_orders($args);
+
+    if (empty($orders)) {
+      $this->gateway->log->add($this->gateway->id, 'ERRO: Nenhum internalId = ' . $posted['internalId']);
+      return;
+    }
+
+    $order = reset($orders);
     $status = sanitize_text_field($posted['current_status']);
 
-    if ($order && $order->id === $order_id && $posted['transaction']['payment_method'] == 'pix') {
+    if ($order && $posted['transaction']['payment_method'] == 'pix') {
       if ($this->gateway->is_debug()) {
         $this->gateway->log->add($this->gateway->id, print_r($posted, true));
       }

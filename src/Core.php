@@ -78,11 +78,11 @@ class Core
   public function __construct()
   {
     //WP::show_errors();
-    $this->pluginUrl  = \WC_PAGARME_PIX_PAYMENT_PLUGIN_URL;
+    $this->pluginUrl = \WC_PAGARME_PIX_PAYMENT_PLUGIN_URL;
     $this->pluginPath = \WC_PAGARME_PIX_PAYMENT_PLUGIN_PATH;
-    $this->assetsUrl  = $this->pluginUrl . '/assets';
+    $this->assetsUrl = $this->pluginUrl . '/assets';
 
-    $this->pluginName    = \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME;
+    $this->pluginName = \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME;
     $this->pluginVersion = \WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION;
 
     WP::add_action('plugins_loaded', $this, 'after_load');
@@ -108,6 +108,7 @@ class Core
     WP::add_action('admin_enqueue_scripts', $this, 'admin_enqueue_scripts');
     WP::add_action('wp_head', $this, 'head', 2);
     WP::add_action('woocommerce_view_order', $this, 'woocommerce_view_order_page', 2);
+    WP::add_action('before_woocommerce_init', $this, 'woocommerce_declare_compatibility');
   }
 
   public function head()
@@ -128,12 +129,12 @@ class Core
     global $wp;
 
     //Page is view order or order received?
-    if (!isset($wp->query_vars['order-received']) && !isset($wp->query_vars['view-order']))
+    if (!is_wc_endpoint_url('order-received') && !isset($wp->query_vars['view-order']))
       return false;
 
     $query_var = isset($wp->query_vars['order-received']) ? $wp->query_vars['order-received'] : $wp->query_vars['view-order'];
 
-    $order_id  = absint($query_var);
+    $order_id = absint($query_var);
 
     if (empty($order_id) || $order_id == 0)
       return false;
@@ -143,7 +144,8 @@ class Core
     if (!$order)
       return false;
 
-    if (((is_wc_endpoint_url('order-received') && is_checkout()) ||
+    if (
+      ((is_wc_endpoint_url('order-received') && is_checkout()) ||
         is_wc_endpoint_url('view-order')) &&
       'wc_pagarme_pix_payment_geteway' == $order->get_payment_method()
     )
@@ -155,11 +157,11 @@ class Core
   public function enqueue_scripts()
   {
     if ($this->is_pix_payment_page()) {
-      wp_enqueue_script(\WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME, \WC_PAGARME_PIX_PAYMENT_PLUGIN_URL . 'assets/js/public/checkout.js', array('jquery'), \WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION);
+      wp_enqueue_script(\WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME . '-checkout', \WC_PAGARME_PIX_PAYMENT_PLUGIN_URL . 'assets/js/public/checkout.js', array('jquery'), \WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION);
     }
 
     if (is_checkout()) {
-      wp_enqueue_script(\WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME, \WC_PAGARME_PIX_PAYMENT_PLUGIN_URL . 'assets/js/public/before-checkout.js', array('jquery'), \WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION);
+      wp_enqueue_script(\WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME . '-before-checkout', \WC_PAGARME_PIX_PAYMENT_PLUGIN_URL . 'assets/js/public/before-checkout.js', array('jquery'), \WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION);
     }
   }
 
@@ -172,7 +174,8 @@ class Core
     $status = $order->get_status();
     $payment_method = $order->get_payment_method();
 
-    if ($payment_method != 'wc_pagarme_pix_payment_geteway' || $status != 'pending') return;
+    if ($payment_method != 'wc_pagarme_pix_payment_geteway' || $status != 'pending')
+      return;
 
     wc_get_template(
       'html-woocommerce-thank-you-page.php',
@@ -213,5 +216,12 @@ class Core
       'colpick',
       \WC_PAGARME_PIX_PAYMENT_PLUGIN_URL . 'assets/js/admin/colpick/colpick.css'
     );
+  }
+
+  public function woocommerce_declare_compatibility()
+  {
+    if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
+      \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', \WC_PAGARME_PIX_PAYMENT_FILE_NAME, true);
+    }
   }
 }

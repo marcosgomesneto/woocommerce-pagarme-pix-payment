@@ -6,14 +6,14 @@ use Exception;
 use WCPagarmePixPayment\WP\Helper as WP;
 use RuntimeException;
 
-defined( 'ABSPATH' ) || exit;
+defined('ABSPATH') || exit;
 
 /**
  * Load gateway if woocommerce is available.
  *
  * @since      1.1.0 
  */
-class BaseGateway 
+class BaseGateway
 {
 	/**
 	 * Add all actions and filters to configure woocommerce
@@ -22,7 +22,7 @@ class BaseGateway
 	 * @since 1.2.0
 	 * @return void
 	 */
-	public static function init () 
+	public static function init()
 	{
 		//global $Muscleboss;
 		//$Muscleboss->showErrors();
@@ -31,10 +31,10 @@ class BaseGateway
 		$base->expire_payment_scheduled();
 
 		WP::add_filter('woocommerce_payment_gateways', $base, 'add_gateway');
-		WP::add_filter('plugin_action_links_'.\WC_PAGARME_PIX_PAYMENT_BASE_NAME, $base, 'plugin_action_links');
+		WP::add_filter('plugin_action_links_' . \WC_PAGARME_PIX_PAYMENT_BASE_NAME, $base, 'plugin_action_links');
 		WP::add_action('wp_ajax_wc_pagarme_pix_payment_check', $base, 'check_pix_payment');
 		WP::add_action('wp_ajax_nopriv_wc_pagarme_pix_payment_check', $base, 'check_pix_payment');
-		WP::add_action('wp_loaded', $base, 'wp_loaded');	
+		WP::add_action('wp_loaded', $base, 'wp_loaded');
 		WP::add_action('woocommerce_cart_calculate_fees', $base, 'add_discount');
 	}
 
@@ -48,17 +48,18 @@ class BaseGateway
 	 *
 	 * @return void
 	 */
-	public function check_pix_payment(){
+	public function check_pix_payment()
+	{
 		$order_id = wc_get_order_id_by_order_key($_GET['key']);
-		$order = wc_get_order( $order_id );
+		$order = wc_get_order($order_id);
 
-		if( $order ){
-			$paid = get_post_meta($order_id, '_wc_pagarme_pix_payment_paid', 'no') === 'yes' ? true : false;
+		if ($order) {
+			$paid = $order->get_meta('_wc_pagarme_pix_payment_paid') === 'yes' ? true : false;
 			wp_send_json(['paid' => $paid]);
 			die();
 		}
 
-		wp_die( esc_html__( 'Order not exists', 'wc-pagarme-pix-payment' ), '', array( 'response' => 401 ) );
+		wp_die(esc_html__('Order not exists', 'wc-pagarme-pix-payment'), '', array('response' => 401));
 	}
 
 	/**
@@ -68,8 +69,8 @@ class BaseGateway
 	 */
 	public function expire_payment_scheduled()
 	{
-		if ( ! wp_next_scheduled( 'wc_pagarme_pix_payment_schedule' ) ) {
-			wp_schedule_event( time(), 'hourly', 'wc_pagarme_pix_payment_schedule' );
+		if (!wp_next_scheduled('wc_pagarme_pix_payment_schedule')) {
+			wp_schedule_event(time(), 'hourly', 'wc_pagarme_pix_payment_schedule');
 		}
 	}
 
@@ -80,30 +81,30 @@ class BaseGateway
 	 */
 	public function check_expired_codes()
 	{
-		$plugin_options = maybe_unserialize( get_option('woocommerce_wc_pagarme_pix_payment_geteway_settings', false) );
+		$plugin_options = maybe_unserialize(get_option('woocommerce_wc_pagarme_pix_payment_geteway_settings', false));
 
-		if( !( $plugin_options && isset( $plugin_options['auto_cancel'] ) && $plugin_options['auto_cancel'] == 'yes' ) )
+		if (!($plugin_options && isset($plugin_options['auto_cancel']) && $plugin_options['auto_cancel'] == 'yes'))
 			return;
 
 		$pix_orders = wc_get_orders(array(
-			'limit'=>-1,
-			'type'=> 'shop_order',
-			'status'=> array( 'on-hold' ),
+			'limit' => -1,
+			'type' => 'shop_order',
+			'status' => array('on-hold'),
 			'payment_method' => 'wc_pagarme_pix_payment_geteway'
-			)
+		)
 		);
-		foreach($pix_orders as $order){
+		foreach ($pix_orders as $order) {
 			$expiration_date = $order->get_meta('_wc_pagarme_pix_payment_expiration_date');
 			$date_format = 'Y-m-d H:i:s';
-			
-			if( preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $expiration_date) ){
+
+			if (preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $expiration_date)) {
 				$date_format = 'Y-m-d';
-			}elseif( !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/', $expiration_date) ){
+			} elseif (!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/', $expiration_date)) {
 				continue;
 			}
 			$expiration_date = \DateTime::createFromFormat($date_format, $expiration_date);
 			$current_date = \DateTime::createFromFormat($date_format, date($date_format, strtotime(current_time('mysql'))));
-			if( $current_date >= $expiration_date ){
+			if ($current_date >= $expiration_date) {
 				$order->update_status('cancelled', 'PIX Pagarme: QR Code expirado, cancelamento automático do pedido.');
 			}
 		}
@@ -112,28 +113,30 @@ class BaseGateway
 	/**
 	 * Add discount.
 	 */
-	public function add_discount( $cart ) {
-		if ( is_admin() && ! defined( 'DOING_AJAX' ) || is_cart() ) {
+	public function add_discount($cart)
+	{
+		if (is_admin() && !defined('DOING_AJAX') || is_cart()) {
 			return;
 		}
 
-		$plugin_options = maybe_unserialize( get_option('woocommerce_wc_pagarme_pix_payment_geteway_settings', false) );
-			
-		if ( WC()->session->chosen_payment_method == 'wc_pagarme_pix_payment_geteway' &&
-			isset( $plugin_options['apply_discount'] ) && $plugin_options['apply_discount'] == 'yes' &&
-			isset( $plugin_options['apply_discount_type'] ) && isset( $plugin_options['apply_discount_amount'] )
-		){
-			
-			$type = $plugin_options['apply_discount_type'];
-			$amount  = $plugin_options['apply_discount_amount'];
+		$plugin_options = maybe_unserialize(get_option('woocommerce_wc_pagarme_pix_payment_geteway_settings', false));
 
-			if( apply_filters( 'wc_pagarme_pix_payment_apply_discount', 0 < $amount, $cart ) ) {
+		if (
+			WC()->session->chosen_payment_method == 'wc_pagarme_pix_payment_geteway' &&
+			isset($plugin_options['apply_discount']) && $plugin_options['apply_discount'] == 'yes' &&
+			isset($plugin_options['apply_discount_type']) && isset($plugin_options['apply_discount_amount'])
+		) {
+
+			$type = $plugin_options['apply_discount_type'];
+			$amount = $plugin_options['apply_discount_amount'];
+
+			if (apply_filters('wc_pagarme_pix_payment_apply_discount', 0 < $amount, $cart)) {
 				$payment_gateways = WC()->payment_gateways->payment_gateways();
-				$gateway          = $payment_gateways['wc_pagarme_pix_payment_geteway'];
-				$name			  = sprintf('Desconto para %s %s', $gateway->title, $type == 'percentage' ? " ({$amount}%)" : '');
-				$discount_name    = apply_filters( 'wc_pagarme_pix_payment_apply_discount_name', $name);
-				$cart_discount    = $this->calculate_discount( $type, $amount, $cart->cart_contents_total ) * - 1;
-				$cart->add_fee( $discount_name, $cart_discount, true );
+				$gateway = $payment_gateways['wc_pagarme_pix_payment_geteway'];
+				$name = sprintf('Desconto para %s %s', $gateway->title, $type == 'percentage' ? " ({$amount}%)" : '');
+				$discount_name = apply_filters('wc_pagarme_pix_payment_apply_discount_name', $name);
+				$cart_discount = $this->calculate_discount($type, $amount, $cart->cart_contents_total) * -1;
+				$cart->add_fee($discount_name, $cart_discount, true);
 			}
 		}
 	}
@@ -141,9 +144,10 @@ class BaseGateway
 	/**
 	 * Calcule the discount amount.
 	 */
-	protected function calculate_discount( $type, $value, $subtotal ) {
-		if ( $type == 'percentage' ) {
-			$value = ( $subtotal / 100 ) * ( $value );
+	protected function calculate_discount($type, $value, $subtotal)
+	{
+		if ($type == 'percentage') {
+			$value = ($subtotal / 100) * ($value);
 		}
 		return $value;
 	}
@@ -154,9 +158,9 @@ class BaseGateway
 	 * @since 1.1.0
 	 * @return void
 	 */
-	public function add_gateway ( array $gateways )
+	public function add_gateway(array $gateways)
 	{
-		array_push( $gateways, PagarmePixGateway::class );
+		array_push($gateways, PagarmePixGateway::class);
 		return $gateways;
 	}
 
@@ -166,16 +170,16 @@ class BaseGateway
 	 * @since 1.1.0
 	 * @return void
 	 */
-	public function plugin_action_links ( $links )
+	public function plugin_action_links($links)
 	{
 		$pluginLinks = array();
 
-		$baseUrl = esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_pagarme_pix_payment_geteway' ) );
+		$baseUrl = esc_url(admin_url('admin.php?page=wc-settings&tab=checkout&section=wc_pagarme_pix_payment_geteway'));
 
 		$pluginLinks[] = sprintf('<a href="%s">%s</a>', $baseUrl, __('Configurações', \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME));
 		$pluginLinks[] = sprintf('<a href="%s" target="_blank">%s</a>', 'https://wordpress.org/support/plugin/wc-pagarme-pix-payment/', __('Suporte', \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME));
 		$pluginLinks[] = sprintf('<a href="%s" target="_blank">%s</a>', 'https://wordpress.org/plugins/wc-pagarme-pix-payment/#reviews', __('Avalie o Plugin	', \WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME));
 
-		return array_merge( $pluginLinks, $links );
+		return array_merge($pluginLinks, $links);
 	}
 }
