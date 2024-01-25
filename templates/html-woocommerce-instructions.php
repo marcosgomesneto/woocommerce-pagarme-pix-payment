@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit;
+defined('ABSPATH') || exit;
 
-printf('<p class="mgn-description">%s</p>', nl2br( wptexturize( $checkout_message ) )); 
+printf('<p class="mgn-description">%s</p>', nl2br(wptexturize($checkout_message)));
 ?>

@@ -1,1 +1,4 @@
 svn http://plugins.svn.wordpress.org/wc-pagarme-pix-payment/
+
+docker run --rm --interactive --volume .:/app composer require --dev php-stubs/wordpress-stubs
+docker run --rm --interactive --volume .:/app composer require --dev php-stubs/woocommerce-stubs

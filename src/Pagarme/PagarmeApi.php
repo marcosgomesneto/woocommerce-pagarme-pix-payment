@@ -186,7 +186,7 @@ abstract class PagarmeApi
 	/**
 	 * Process the order status.
 	 *
-	 * @param WC_Order $order  Order data.
+	 * @param \WC_Order $order  Order data.
 	 * @param string   $status Transaction status.
 	 */
 	public function process_order_status($order, $status)
@@ -208,7 +208,8 @@ abstract class PagarmeApi
 					$this->gateway->log->add($this->gateway->id, 'UPDATING: order id ' . $order->get_id() . ' to yes');
 				}
 
-				update_post_meta($order->get_id(), '_wc_pagarme_pix_payment_paid', 'yes');
+				$order->update_meta_data('_wc_pagarme_pix_payment_paid', 'yes');
+				$order->save();
 
 				// Changing the order for processing and reduces the stock.
 				$order->payment_complete();
