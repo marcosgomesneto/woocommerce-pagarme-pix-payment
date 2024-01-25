@@ -34,7 +34,7 @@ Muitas vezes a opção de receber PIX pela Pagar.me vem desativada por padrão, 
 
 Compativel com a última versão do Woocommerce.
 
-## 2.1.1
+## 2.1.2
 
 - WooCommerce HPOS compatibilidade
 - Wordpress Block Support
