@@ -5,7 +5,7 @@ Tags: woocommerce, automatico, payment, pix, e-commerce, shop, ecommerce, pagame
 Requires at least: 4.0
 Requires PHP: 7.0
 Tested up to: 6.4
-Stable tag: 2.1.1
+Stable tag: 2.1.2
 License: GPLv2 or later
 Language: pt_BR
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -49,7 +49,7 @@ Muitas vezes a opção de receber PIX pela Pagar.me vem desativada por padrão, 
 
 Compativel com a última versão do Woocommerce.
 
-== 2.1.1 ==
+== 2.1.2 ==
 
 * WooCommerce HPOS compatibilidade
 * Wordpress Block Support
