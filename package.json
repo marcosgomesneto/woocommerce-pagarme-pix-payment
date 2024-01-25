@@ -1,0 +1,25 @@
+{
+  "name": "woocommerce-pagarme-pix-payment",
+  "version": "2.1.1",
+  "description": "Receba pagamentos via PIX no WooCommerce com a Pagar-me de forma automática sem precisar de comprovantes de pagamento.",
+  "scripts": {
+    "start": "wp-scripts start",
+    "build": "wp-scripts build"
+  },
+  "engines": {
+    "node": "16"
+  },
+  "repository": "https://github.com/marcosgomesneto/woocommerce-pagarme-pix-payment.git",
+  "bugs": {
+    "url": "https://github.com/marcosgomesneto/woocommerce-pagarme-pix-payment/issues"
+  },
+  "author": "Marcos Gomes Neto <marcosgomesneto@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@woocommerce/dependency-extraction-webpack-plugin": "^2.3.0",
+    "@wordpress/scripts": "^26.18.0"
+  },
+  "dependencies": {
+    "@wordpress/icons": "^9.41.0"
+  }
+}

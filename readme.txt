@@ -14,6 +14,12 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 ** AGORA TAMBÉM DISPONÍVEL PARA V5 DA PAGARME **
 
+**Para incentivar o projeto, me de uma ⭐ no projeto do GitHub, e fique a vontade para contribuir com o projeto:**
+
+[Respositório no Github](https://github.com/marcosgomesneto/woocommerce-pagarme-pix-payment)
+[Relate um problema](https://github.com/marcosgomesneto/woocommerce-pagarme-pix-payment/issues)
+[Faça uma contribuição no código](https://github.com/marcosgomesneto/woocommerce-pagarme-pix-payment/pulls)
+
 O Plugin gera um QR code para pagamento PIX na finalização da compra. O cliente só precisa clicar no botão "Copiar Código" e então ir no aplicativo do banco, entrar na opção "PIX Copia e Cola" e fazer o pagamento.
 
 Quando ele terminar de pagar e voltar para o site, o plugin recebe a confirmação de pagamento e automaticamente uma animação é mostrada com a mensagem de "Pagamento Confirmado".
@@ -42,6 +48,11 @@ Para adicionar essas duas chaves nas configurações do nosso plugin é só ir n
 Muitas vezes a opção de receber PIX pela Pagar.me vem desativada por padrão, mas é bem simples de ativá-la, você pode entrar em contato com a Pagar.me pelo chat deles que eles liberam na mesma hora.
 
 Compativel com a última versão do Woocommerce.
+
+== 2.1.1 ==
+
+* WooCommerce HPOS compatibilidade
+* Wordpress Block Support
 
 == 2.1.0 ==
 
