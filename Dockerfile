@@ -5,5 +5,5 @@ RUN apt-get update && apt-get install -y \
   unzip
 
 RUN cd /var/www/html/wp-content/plugins \
-  && wget https://downloads.wordpress.org/plugin/woocommerce.6.6.0.zip \
-  && unzip woocommerce.6.6.0.zip
+  && wget https://downloads.wordpress.org/plugin/woocommerce.8.6.1.zip \
+  && unzip woocommerce.8.6.1.zip

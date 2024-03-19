@@ -36,6 +36,10 @@ Compativel com a última versão do Woocommerce.
 
 ## 2.1.2
 
+- Bug Correction
+
+## 2.1.2
+
 - WooCommerce HPOS compatibilidade
 - Wordpress Block Support
 

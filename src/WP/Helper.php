@@ -1,13 +1,14 @@
 <?php
 namespace WCPagarmePixPayment\WP;
 
-if ( ! defined( 'ABSPATH' ) ) { exit; }
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Class to provide WordPress shortcuts.
  */
-class Helper 
-{	
+class Helper {
 	/**
 	 * "Queue" WordPress admin notices.
 	 * 
@@ -59,22 +60,21 @@ class Helper
 	 * @param int $accepted_args Optional. The number of arguments that should be passed to the $callback. Default is 1.
 	 * @return void
 	 */
-	public static function add_action (
+	public static function add_action(
 		string $hook,
 		$component,
 		string $callback,
 		int $priority = 10,
 		int $accepted_args = 1
-	)
-	{
-		$hook = [
+	) {
+		$hook = [ 
 			'hook' => $hook,
-			'callback' => [$component, $callback],
+			'callback' => [ $component, $callback ],
 			'priority' => $priority,
 			'accepted_args' => $accepted_args
 		];
 
-		add_action( $hook['hook'], $hook['callback'], $hook['priority'], $hook['accepted_args'] ); 
+		add_action( $hook['hook'], $hook['callback'], $hook['priority'], $hook['accepted_args'] );
 	}
 
 	/**
@@ -88,17 +88,16 @@ class Helper
 	 * @param int $accepted_args Optional. The number of arguments that should be passed to the $callback. Default is 1.
 	 * @return void
 	 */
-	public static function add_filter (
+	public static function add_filter(
 		string $hook,
 		$component,
 		string $callback,
 		int $priority = 10,
 		int $accepted_args = 1
-	)
-	{
-		$hook = [
+	) {
+		$hook = [ 
 			'hook' => $hook,
-			'callback' => [$component, $callback],
+			'callback' => [ $component, $callback ],
 			'priority' => $priority,
 			'accepted_args' => $accepted_args
 		];
@@ -115,13 +114,12 @@ class Helper
 	 * @param bool $is_dismissible Whether the message should be dismissible.
 	 * @return void
 	 */
-	public static function add_admin_notice (
+	public static function add_admin_notice(
 		string $message,
 		string $type = self::ADMIN_NOTICE_INFO,
 		bool $is_dismissible = true
-	)
-	{
-		self::$notices[] = [
+	) {
+		self::$notices[] = [ 
 			'message' => $message,
 			'class' => $type,
 			'is_dismissible' => (bool) $is_dismissible
@@ -134,9 +132,9 @@ class Helper
 	 * @return void
 	 */
 	public static function show_errors() {
-		ini_set('display_errors', 1);
-		ini_set('display_startup_errors', 1);
-		error_reporting(E_ALL);
+		ini_set( 'display_errors', 1 );
+		ini_set( 'display_startup_errors', 1 );
+		error_reporting( E_ALL );
 	}
 
 	/**
@@ -145,14 +143,14 @@ class Helper
 	 * @since 1.1.0
 	 * @return void
 	 */
-	public static function display_notices ()
-	{
-		foreach ( self::$notices as $notice )
-		{
+	public static function display_notices() {
+		foreach ( self::$notices as $notice ) {
 			$dismissible = $notice['is_dismissible'] ? 'is-dismissible' : '';
 			?>
 			<div class="notice <?php echo esc_attr( $notice['class'] ); ?> <?php echo esc_attr( $dismissible ); ?>">
-				<p><?php echo wp_kses_post( $notice['message'] ); ?></p>
+				<p>
+					<?php echo wp_kses_post( $notice['message'] ); ?>
+				</p>
 			</div>
 			<?php
 		}
@@ -164,13 +162,13 @@ class Helper
 	 * @since 1.1.0
 	 * @return bool
 	 */
-	public static function is_doing_ajax () : bool
-	{
+	public static function is_doing_ajax(): bool {
 		// Return WordPress native function if exists
-		if ( function_exists('wp_doing_ajax') ) return wp_doing_ajax();
+		if ( function_exists( 'wp_doing_ajax' ) )
+			return wp_doing_ajax();
 
 		// Check for ajax constant variable
-		return ( defined('DOING_AJAX') && DOING_AJAX );
+		return ( defined( 'DOING_AJAX' ) && DOING_AJAX );
 	}
 
 	/**
@@ -179,8 +177,9 @@ class Helper
 	 * @since 1.1.0
 	 * @return bool
 	 */
-	public static function is_pure_admin () : bool
-	{ return ( is_admin() && !self::is_doing_ajax() ); }
+	public static function is_pure_admin(): bool {
+		return ( is_admin() && ! self::is_doing_ajax() );
+	}
 
 	/**
 	 * Check if WP_DEBUG is active.
@@ -188,8 +187,9 @@ class Helper
 	 * @since 1.1.0
 	 * @return bool
 	 */
-	public static function is_debugging () : bool
-	{ return ( defined('WP_DEBUG') && WP_DEBUG ); }
+	public static function is_debugging(): bool {
+		return ( defined( 'WP_DEBUG' ) && WP_DEBUG );
+	}
 
 	/**
 	 * Get the postfix for assets files - ".min" or empty
@@ -198,8 +198,9 @@ class Helper
 	 * @since 1.1.0
 	 * @return string
 	 */
-	public static function minify () : string 
-	{ return ( defined('SCRIPT_DEBUG') && SCRIPT_DEBUG ) ? '' : '.min'; }
+	public static function minify(): string {
+		return ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+	}
 
 	/**
 	 * Check whether the string is a JSON or not.
@@ -208,6 +209,7 @@ class Helper
 	 * @param string $string String to test if it's json.
 	 * @return string
 	 */
-	public static function is_json ( string $string ) : bool
-	{ return is_string( $string ) && is_array( json_decode( $string, true ) ) && ( json_last_error() === JSON_ERROR_NONE ) ? true : false; }
+	public static function is_json( string $string ): bool {
+		return is_string( $string ) && is_array( json_decode( $string, true ) ) && ( json_last_error() === JSON_ERROR_NONE ) ? true : false;
+	}
 }
