@@ -15,11 +15,14 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 
 	private static $instance;
 
+	public $debug = 'no';
+	public $api_key;
+
 	/**
 	 * Constructor for the gateway.
 	 */
 	public function __construct() {
-		$this->instance = $this;
+		self::$instance = $this;
 
 		global $current_section;
 
@@ -53,10 +56,10 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		}
 
 		if (
-			isset( $_POST['pagarmeconfirm'] )
-			&& isset( $_GET['page'] )
+			isset ( $_POST['pagarmeconfirm'] )
+			&& isset ( $_GET['page'] )
 			&& $_GET['page'] == 'wc-settings'
-			&& isset( $_GET['section'] )
+			&& isset ( $_GET['section'] )
 			&& $_GET['section'] == 'wc_pagarme_pix_payment_geteway'
 		) {
 			$update_settings = get_option( $this->get_option_key(), [] );
@@ -97,7 +100,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 				$debug = filter_input( INPUT_POST, $this->get_field_name( 'debug' ), FILTER_SANITIZE_STRING );
 				$after_paid_status = filter_input( INPUT_POST, $this->get_field_name( 'after_paid_status' ), FILTER_SANITIZE_STRING );
 
-				if ( ( $api_version == 'v4' && ( empty( $api_key ) || empty( $encryption_key ) ) ) || empty( $title ) || empty( $api_version ) ) {
+				if ( ( $api_version == 'v4' && ( empty ( $api_key ) || empty ( $encryption_key ) ) ) || empty ( $title ) || empty ( $api_version ) ) {
 					WC_Admin_Settings::add_error( __( 'É preciso preencher a todos os campos', \WC_PAGARME_PIX_PAYMENT_DIR_NAME ) );
 					return;
 				}
@@ -107,7 +110,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 				$update_settings['title'] = $title;
 				$update_settings['encryption_key'] = $encryption_key;
 				$update_settings['secret_key'] = $secret_key;
-				$update_settings['debug'] = isset( $debug ) ? 'yes' : 'no';
+				$update_settings['debug'] = isset ( $debug ) ? 'yes' : 'no';
 				$update_settings['after_paid_status'] = $after_paid_status;
 				break;
 			case 'customize':
@@ -117,7 +120,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 				$pix_icon_color = filter_input( INPUT_POST, $this->get_field_name( 'pix_icon_color' ), FILTER_SANITIZE_STRING );
 				$pix_icon_size = filter_input( INPUT_POST, $this->get_field_name( 'pix_icon_size' ), FILTER_SANITIZE_STRING );
 
-				if ( empty( $checkout_message ) || empty( $order_recived_message ) || empty( $thank_you_message ) ) {
+				if ( empty ( $checkout_message ) || empty ( $order_recived_message ) || empty ( $thank_you_message ) ) {
 					//WC_Admin_Settings::add_error( __('É preciso preencher a todos os campos', \WC_PAGARME_PIX_PAYMENT_DIR_NAME) ); 
 				}
 
@@ -174,17 +177,17 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 					return;
 				}
 
-				if ( isset( $apply_discount ) && ( empty( $apply_discount_amount ) || empty( $apply_discount_type ) ) ) {
+				if ( isset ( $apply_discount ) && ( empty ( $apply_discount_amount ) || empty ( $apply_discount_type ) ) ) {
 					WC_Admin_Settings::add_error( __( 'Ao ativar o desconto você precisa preencher os campos.', \WC_PAGARME_PIX_PAYMENT_DIR_NAME ) );
 					return;
 				}
 
-				if ( isset( $apply_discount ) && $apply_discount_amount == '0' ) {
+				if ( isset ( $apply_discount ) && $apply_discount_amount == '0' ) {
 					WC_Admin_Settings::add_error( __( 'O desconto não pode ser 0.', \WC_PAGARME_PIX_PAYMENT_DIR_NAME ) );
 					return;
 				}
 
-				if ( isset( $apply_discount ) && ! preg_match( '/^[0-9]+([\,][0-9]{1,2})?$/i', $apply_discount_amount ) ) {
+				if ( isset ( $apply_discount ) && ! preg_match( '/^[0-9]+([\,][0-9]{1,2})?$/i', $apply_discount_amount ) ) {
 					WC_Admin_Settings::add_error( __( 'O desconto só poder ter números inteiros ou então separado por "," (vírgula) com até 2 casas decimais: ex: 10 ou 5,80', \WC_PAGARME_PIX_PAYMENT_DIR_NAME ) );
 					return;
 				}
@@ -193,8 +196,8 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 
 
 				$update_settings['check_payment_interval'] = $check_payment_interval;
-				$update_settings['auto_cancel'] = isset( $auto_cancel ) ? 'yes' : 'no';
-				$update_settings['apply_discount'] = isset( $apply_discount ) ? 'yes' : 'no';
+				$update_settings['auto_cancel'] = isset ( $auto_cancel ) ? 'yes' : 'no';
+				$update_settings['apply_discount'] = isset ( $apply_discount ) ? 'yes' : 'no';
 				$update_settings['apply_discount_amount'] = $apply_discount_amount;
 				$update_settings['apply_discount_type'] = $apply_discount_type;
 				$update_settings['expiration_days'] = $expiration_days;
@@ -330,7 +333,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 	 */
 	protected function get_current_tab() {
 		$current_tab = filter_input( INPUT_GET, 'mgn_tab', FILTER_SANITIZE_STRING );
-		$current_tab = isset( $current_tab ) ? $current_tab : 'general';
+		$current_tab = isset ( $current_tab ) ? $current_tab : 'general';
 
 		return $current_tab;
 	}
@@ -374,10 +377,10 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 
 		$tab_template = \WC_PAGARME_PIX_PAYMENT_PLUGIN_PATH . 'templates/admin/settings/' . $current_tab . '-settings.php';
 
-		require_once( \WC_PAGARME_PIX_PAYMENT_PLUGIN_PATH . 'templates/admin/settings/header-settings.php' );
+		require_once ( \WC_PAGARME_PIX_PAYMENT_PLUGIN_PATH . 'templates/admin/settings/header-settings.php' );
 
 		if ( file_exists( $tab_template ) )
-			require_once( $tab_template );
+			require_once ( $tab_template );
 	}
 
 	/**
