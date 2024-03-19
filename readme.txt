@@ -51,7 +51,7 @@ Compativel com a última versão do Woocommerce.
 
 == 2.1.3 ==
 
-* Bug correction
+* V4 Fix Fingerprint
 
 == 2.1.2 ==
 
