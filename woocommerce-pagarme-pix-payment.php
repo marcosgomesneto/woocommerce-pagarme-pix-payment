@@ -11,11 +11,11 @@
  * Plugin Name:       		Pix Automático com Pagarme para WooCommerce
  * Plugin URI:        		https://github.com/marcosgomesneto/woocommerce-pagarme-pix-payment
  * Description:       		Receba pagamentos via PIX no WooCommerce com a Pagar-me de forma automática sem precisar de comprovantes de pagamento.
- * Version:           		2.1.3
+ * Version:           		2.1.4
  * Requires at least: 		5.2
  * Requires PHP:      		7.0
  * WC requires at least:	3.0
- * WC tested up to:      	8.5.1
+ * WC tested up to:      	8.8.3
  * Author:            		Marcos Gomes Neto
  * Author URI:        		https://github.com/marcosgomesneto
  * Text Domain:       		wc-pagarme-pix-payment
@@ -26,7 +26,7 @@ defined( 'ABSPATH' ) || exit;
 
 //Define globals
 define( 'WC_PAGARME_PIX_PAYMENT_PLUGIN_NAME', 'wc-pagarme-pix-payment' );
-define( 'WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION', '2.1.3' );
+define( 'WC_PAGARME_PIX_PAYMENT_PLUGIN_VERSION', '2.1.4' );
 define( 'WC_PAGARME_PIX_PAYMENT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'WC_PAGARME_PIX_PAYMENT_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WC_PAGARME_PIX_PAYMENT_BASE_NAME', plugin_basename( __FILE__ ) );
@@ -54,7 +54,7 @@ function wc_pagarme_pix_payment() {
 	 */
 	static $core;
 
-	if ( ! isset ( $core ) ) {
+	if ( ! isset( $core ) ) {
 		$core = new \WCPagarmePixPayment\Core();
 	}
 

@@ -4,8 +4,8 @@ Contributors: marcosgn
 Tags: woocommerce, payment, pix, pagamento, pagarme
 Requires at least: 4.0
 Requires PHP: 7.0
-Tested up to: 6.4
-Stable tag: 2.1.3
+Tested up to: 6.5
+Stable tag: 2.1.4
 License: GPLv2 or later
 Language: pt_BR
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -15,6 +15,8 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 ** AGORA TAMBÉM DISPONÍVEL PARA V5 DA PAGARME **
 
 **Para incentivar o projeto, me de uma ⭐ no projeto do GitHub, e fique a vontade para contribuir com o projeto:**
+
+Precisa de um plugin sob encomenda? Entre em contato: **gomes.php@gmail.com**
 
 [Respositório no Github](https://github.com/marcosgomesneto/woocommerce-pagarme-pix-payment)
 [Relate um problema](https://github.com/marcosgomesneto/woocommerce-pagarme-pix-payment/issues)
