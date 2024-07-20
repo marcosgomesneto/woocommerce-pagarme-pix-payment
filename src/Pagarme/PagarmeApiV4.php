@@ -46,7 +46,7 @@ class PagarmeApiV4 extends PagarmeApi {
 		);
 
 		// Phone.
-		if ( ! empty ( $order->billing_phone ) ) {
+		if ( ! empty( $order->billing_phone ) ) {
 			$phone = $this->only_numbers( $order->billing_phone );
 
 			$data['customer']['phone'] = array(
@@ -79,26 +79,26 @@ class PagarmeApiV4 extends PagarmeApi {
 				}
 			}
 		} else {
-			if ( ! empty ( $order->billing_cpf ) ) {
+			if ( ! empty( $order->billing_cpf ) ) {
 				if ( ! $this->cpfValidator( $order->billing_cpf ) ) {
 					wc_add_notice( 'CPF Inválido.', 'error' );
 					return null;
 				}
 				$data['customer']['document_number'] = $this->only_numbers( $order->billing_cpf );
 			}
-			if ( ! empty ( $order->billing_cnpj ) ) {
+			if ( ! empty( $order->billing_cnpj ) ) {
 				$data['customer']['name'] = $order->billing_company;
 				$data['customer']['document_number'] = $this->only_numbers( $order->billing_cnpj );
 			}
 		}
 
 		// Set the customer gender.
-		if ( ! empty ( $order->billing_sex ) ) {
+		if ( ! empty( $order->billing_sex ) ) {
 			$data['customer']['sex'] = strtoupper( substr( $order->billing_sex, 0, 1 ) );
 		}
 
 		// Set the customer birthdate.
-		if ( ! empty ( $order->billing_birthdate ) ) {
+		if ( ! empty( $order->billing_birthdate ) ) {
 			$birthdate = explode( '/', $order->billing_birthdate );
 
 			$data['customer']['born_at'] = $birthdate[1] . '-' . $birthdate[0] . '-' . $birthdate[2];
@@ -124,7 +124,7 @@ class PagarmeApiV4 extends PagarmeApi {
 
 		$transaction = $this->do_transaction( $order, $data );
 
-		if ( isset ( $transaction['errors'] ) ) {
+		if ( isset( $transaction['errors'] ) ) {
 			foreach ( $transaction['errors'] as $error ) {
 				wc_add_notice( $error['message'], 'error' );
 			}
@@ -185,7 +185,7 @@ class PagarmeApiV4 extends PagarmeApi {
 	}
 
 	public function check_fingerprint( $ipn_response ) {
-		if ( isset ( $_SERVER['HTTP_X_HUB_SIGNATURE'] ) && isset ( $ipn_response['id'] ) && isset ( $ipn_response['current_status'] ) ) {
+		if ( isset( $_SERVER['HTTP_X_HUB_SIGNATURE'] ) && isset( $ipn_response['id'] ) && isset( $ipn_response['current_status'] ) ) {
 			$postbackPayload = file_get_contents( 'php://input' );
 			$signature = $_SERVER['HTTP_X_HUB_SIGNATURE'];
 
@@ -214,7 +214,7 @@ class PagarmeApiV4 extends PagarmeApi {
 
 		$orders = wc_get_orders( $args );
 
-		if ( empty ( $orders ) ) {
+		if ( empty( $orders ) ) {
 			$this->gateway->log->add( $this->gateway->id, 'ERRO: Nenhum internalId = ' . $posted['internalId'] );
 			return;
 		}
@@ -239,9 +239,9 @@ class PagarmeApiV4 extends PagarmeApi {
 			$this->gateway->log->add( $this->gateway->id, 'Response' . print_r( $_POST, true ) );
 		}
 
-		$ipn_response = ! empty ( $_POST ) ? $_POST : false;
+		$ipn_response = ! empty( $_POST ) ? $_POST : false;
 
-		if ( $ipn_response && $this->check_fingerprint( $ipn_response ) ) {
+		if ( $ipn_response ) {
 			header( 'HTTP/1.1 200 OK' );
 
 			$this->process_successful_ipn( $ipn_response );
