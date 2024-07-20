@@ -18,6 +18,47 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 	public $debug = 'no';
 	public $api_key;
 
+	public $api;
+
+	public $aync;
+
+	public $api_version;
+
+	public $encryption_key;
+
+	public $secret_key;
+
+	public $checkout_message;
+
+	public $order_recived_message;
+
+	public $thank_you_message;
+
+	public $pix_icon_color;
+
+	public $pix_icon_size;
+
+	public $expiration_days;
+
+	public $expiration_hours;
+
+	public $after_paid_status;
+
+	public $read_notice;
+
+	public $check_payment_interval;
+
+	public $auto_cancel;
+
+	public $apply_discount;
+
+	public $apply_discount_amount;
+
+	public $apply_discount_type;
+
+	public $email_instruction;
+
+
 	/**
 	 * Constructor for the gateway.
 	 */
@@ -81,7 +122,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 	 * Update admin options
 	 * 
 	 * @since 1.1.0
-	 * @return void
+	 * @return void|bool
 	 */
 	public function process_admin_options() {
 		$current_tab = $this->get_current_tab();
@@ -354,7 +395,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 	 * Tabs
 	 * 
 	 * @since 1.1.0
-	 * @return string
+	 * @return array
 	 */
 	protected function get_tabs() {
 		return [ 
@@ -463,7 +504,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 	 * @param  bool   $sent_to_admin Send to admin.
 	 * @param  bool   $plain_text    Plain text or HTML.
 	 *
-	 * @return string                Payment instructions.
+	 * @return string|void                Payment instructions.
 	 */
 	public function email_instructions( $order, $sent_to_admin, $plain_text = false ) {
 		if (
