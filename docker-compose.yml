@@ -24,11 +24,14 @@ services:
     volumes:
       - wordpress:/var/www/html
       - .:/var/www/html/wp-content/plugins/wc-pagarme-pix-payment
-      - c:/Dev/Projects/Other Clients/polopix/wc-polo-payments:/var/www/html/wp-content/plugins/wc-polo-payments
-      - c:/Dev/Projects/Other Clients/intensivacursos/intensiva-cursos-checkout:/var/www/html/wp-content/plugins/intensiva-cursos-checkout
+      - C:/Dev/Coding/woocommerce.9.0.2/woocommerce:/var/www/html/wp-content/plugins/woocommerce
+      - C:/Dev/Projects/Other Clients/polopix/wc-polo-payments:/var/www/html/wp-content/plugins/wc-polo-payments
+      - C:/Dev/Projects/Other Clients/intensivacursos/intensiva-cursos-checkout:/var/www/html/wp-content/plugins/intensiva-cursos-checkout
+      - C:/Dev/Projects/Other Clients/abdiel/rd-station-integration:/var/www/html/wp-content/plugins/rd-station-integration
       - C:/Dev/Coding/plugins-de-terceiros/funnel-builder-pro/funnel-builder-pro:/var/www/html/wp-content/plugins/funnel-builder-pro
       - C:/Dev/Coding/plugins-de-terceiros/learndash/sfwd-lms:/var/www/html/wp-content/plugins/sfwd-lms
       - C:/Dev/Coding/plugins-de-terceiros/learndash-woocommerce/learndash-woocommerce:/var/www/html/wp-content/plugins/learndash-woocommerce
+      - C:/Dev/Projects/Other Clients/intensivacursos/woocommerce-pagarme-3.0.0/woocommerce-pagarme:/var/www/html/wp-content/plugins/woocommerce-pagarme
   db:
     image: mysql:5.7
     restart: always

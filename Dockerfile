@@ -9,7 +9,3 @@ RUN chmod +x wp-cli.phar
 RUN mv wp-cli.phar /usr/local/bin/wp
 
 RUN echo "memory_limit = -1" > $PHP_INI_DIR/conf.d/custom.ini
-
-RUN cd /var/www/html/wp-content/plugins \
-  && wget https://downloads.wordpress.org/plugin/woocommerce.8.6.1.zip \
-  && unzip woocommerce.8.6.1.zip

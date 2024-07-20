@@ -56,10 +56,10 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		}
 
 		if (
-			isset ( $_POST['pagarmeconfirm'] )
-			&& isset ( $_GET['page'] )
+			isset( $_POST['pagarmeconfirm'] )
+			&& isset( $_GET['page'] )
 			&& $_GET['page'] == 'wc-settings'
-			&& isset ( $_GET['section'] )
+			&& isset( $_GET['section'] )
 			&& $_GET['section'] == 'wc_pagarme_pix_payment_geteway'
 		) {
 			$update_settings = get_option( $this->get_option_key(), [] );
@@ -100,7 +100,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 				$debug = filter_input( INPUT_POST, $this->get_field_name( 'debug' ), FILTER_SANITIZE_STRING );
 				$after_paid_status = filter_input( INPUT_POST, $this->get_field_name( 'after_paid_status' ), FILTER_SANITIZE_STRING );
 
-				if ( ( $api_version == 'v4' && ( empty ( $api_key ) || empty ( $encryption_key ) ) ) || empty ( $title ) || empty ( $api_version ) ) {
+				if ( ( $api_version == 'v4' && ( empty( $api_key ) || empty( $encryption_key ) ) ) || empty( $title ) || empty( $api_version ) ) {
 					WC_Admin_Settings::add_error( __( 'É preciso preencher a todos os campos', \WC_PAGARME_PIX_PAYMENT_DIR_NAME ) );
 					return;
 				}
@@ -110,7 +110,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 				$update_settings['title'] = $title;
 				$update_settings['encryption_key'] = $encryption_key;
 				$update_settings['secret_key'] = $secret_key;
-				$update_settings['debug'] = isset ( $debug ) ? 'yes' : 'no';
+				$update_settings['debug'] = isset( $debug ) ? 'yes' : 'no';
 				$update_settings['after_paid_status'] = $after_paid_status;
 				break;
 			case 'customize':
@@ -120,7 +120,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 				$pix_icon_color = filter_input( INPUT_POST, $this->get_field_name( 'pix_icon_color' ), FILTER_SANITIZE_STRING );
 				$pix_icon_size = filter_input( INPUT_POST, $this->get_field_name( 'pix_icon_size' ), FILTER_SANITIZE_STRING );
 
-				if ( empty ( $checkout_message ) || empty ( $order_recived_message ) || empty ( $thank_you_message ) ) {
+				if ( empty( $checkout_message ) || empty( $order_recived_message ) || empty( $thank_you_message ) ) {
 					//WC_Admin_Settings::add_error( __('É preciso preencher a todos os campos', \WC_PAGARME_PIX_PAYMENT_DIR_NAME) ); 
 				}
 
@@ -177,17 +177,17 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 					return;
 				}
 
-				if ( isset ( $apply_discount ) && ( empty ( $apply_discount_amount ) || empty ( $apply_discount_type ) ) ) {
+				if ( isset( $apply_discount ) && ( empty( $apply_discount_amount ) || empty( $apply_discount_type ) ) ) {
 					WC_Admin_Settings::add_error( __( 'Ao ativar o desconto você precisa preencher os campos.', \WC_PAGARME_PIX_PAYMENT_DIR_NAME ) );
 					return;
 				}
 
-				if ( isset ( $apply_discount ) && $apply_discount_amount == '0' ) {
+				if ( isset( $apply_discount ) && $apply_discount_amount == '0' ) {
 					WC_Admin_Settings::add_error( __( 'O desconto não pode ser 0.', \WC_PAGARME_PIX_PAYMENT_DIR_NAME ) );
 					return;
 				}
 
-				if ( isset ( $apply_discount ) && ! preg_match( '/^[0-9]+([\,][0-9]{1,2})?$/i', $apply_discount_amount ) ) {
+				if ( isset( $apply_discount ) && ! preg_match( '/^[0-9]+([\,][0-9]{1,2})?$/i', $apply_discount_amount ) ) {
 					WC_Admin_Settings::add_error( __( 'O desconto só poder ter números inteiros ou então separado por "," (vírgula) com até 2 casas decimais: ex: 10 ou 5,80', \WC_PAGARME_PIX_PAYMENT_DIR_NAME ) );
 					return;
 				}
@@ -196,8 +196,8 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 
 
 				$update_settings['check_payment_interval'] = $check_payment_interval;
-				$update_settings['auto_cancel'] = isset ( $auto_cancel ) ? 'yes' : 'no';
-				$update_settings['apply_discount'] = isset ( $apply_discount ) ? 'yes' : 'no';
+				$update_settings['auto_cancel'] = isset( $auto_cancel ) ? 'yes' : 'no';
+				$update_settings['apply_discount'] = isset( $apply_discount ) ? 'yes' : 'no';
 				$update_settings['apply_discount_amount'] = $apply_discount_amount;
 				$update_settings['apply_discount_type'] = $apply_discount_type;
 				$update_settings['expiration_days'] = $expiration_days;
@@ -303,7 +303,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		$this->email_instruction = $this->get_option( 'email_instruction', '<h4 style="text-align: center;">Faça o pagamento para finalizar a compra</h4><p style="text-align: center;">Escaneie o código abaixo</p><p style="text-align: center;">[qr_code]</p><h4 style="text-align: center;">ou</h4><p style="text-align: center;">[link text="Clique aqui"] para ver o código ou copiar</p>' );
 		$this->pix_icon_color = $this->get_option( 'pix_icon_color', '#32BCAD' );
 		$this->pix_icon_size = $this->get_option( 'pix_icon_size', '48' );
-		$this->icon = apply_filters( 'woocommerce_gateway_icon', $this->get_option( 'pix_icon', 'data:image/svg+xml;base64, PHN2ZyB2aWV3Qm94PSIwIDAgNDcuOTk5OTk5IDQ3Ljk5OTk5OSIgdmVyc2lvbj0iMS4xIiB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6c3ZnPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0ibSAzNy4yMTI3MzYsMzYuNTE5ODM2IGEgNi44OTU3Njk3LDYuODk1NzY5NyAwIDAgMSAtNC45MDY1MTksLTIuMDI1MTc0IGwgLTcuMDg3MzYxLC03LjA5MTg1IGEgMS4zNDcxMjI0LDEuMzQ3MTIyNCAwIDAgMCAtMS44NjIwMjIsMCBsIC03LjExMTMxLDcuMTExMzA4IGEgNi44OTg3NjMyLDYuODk4NzYzMiAwIDAgMSAtNC45MDY1MTgsMi4wMzExNjIgSCA5Ljk1MTQ3MDIgbCA4Ljk4MDgxNDgsOC45ODA4MTYgYSA3LjE4NDY1MjYsNy4xODQ2NTI2IDAgMCAwIDEwLjE0OTgxOSwwIGwgOC45OTg3NzcsLTkuMDAwMjc1IHoiIGZpbGw9IiMzMkJDQUQiLz48cGF0aCBkPSJtIDExLjM0MDUwMywxMS40NTczNzMgYSA2Ljg5NzI2NjUsNi44OTcyNjY1IDAgMCAxIDQuOTA2NTE4LDIuMDMxMTYgbCA3LjExMTMxLDcuMTEyODA3IGEgMS4zMTg2ODMsMS4zMTg2ODMgMCAwIDAgMS44NjIwMjIsMCBsIDcuMDg1ODY0LC03LjA4NTg2NSBhIDYuODg1MjkxOSw2Ljg4NTI5MTkgMCAwIDEgNC45MDY1MTksLTIuMDMyNjU3IGggMC44NTMxNzYgTCAyOS4wNjcxMzYsMi40ODQwNDA1IGEgNy4xNzU2NzE4LDcuMTc1NjcxOCAwIDAgMCAtMTAuMTQ5ODE5LDAgTCA5Ljk1MTQ3MDIsMTEuNDU3MzczIFoiIGZpbGw9IiMzMkJDQUQiLz48cGF0aCBkPSJNIDQ1LjUwOTUxMywxOC45Mjc5MTUgNDAuMDcxNjI4LDEzLjQ5MDAzIGEgMS4wNDc3NjE4LDEuMDQ3NzYxOCAwIDAgMSAtMC4zODYxNzQsMC4wNzc4MyBoIC0yLjQ3MjcxOCBhIDQuODgyNTcwMSw0Ljg4MjU3MDEgMCAwIDAgLTMuNDMyMTcsMS40MjE5NTkgbCAtNy4wODU4NjIsNy4wODEzNzMgYSAzLjQwMzcyOTIsMy40MDM3MjkyIDAgMCAxIC00LjgwOTIyNywwIGwgLTcuMTEyODA2LC03LjEwODMxIEEgNC44ODI1NzAxLDQuODgyNTcwMSAwIDAgMCAxMS4zNDA1MDMsMTMuNTM5NDI0IEggOC4zMDQ5ODY0IGEgMS4wNjU3MjM0LDEuMDY1NzIzNCAwIDAgMSAtMC4zNjUyMTk2LC0wLjA3MzM0IGwgLTUuNDcyMzEwMyw1LjQ2MTgzMyBhIDcuMTg0NjUyNiw3LjE4NDY1MjYgMCAwIDAgMCwxMC4xNDk4MTggbCA1LjQ2MDMzNTgsNS40NjAzMzEgYSAxLjAyNTMwOTcsMS4wMjUzMDk3IDAgMCAxIDAuMzY1MjE5NiwtMC4wNzMzNSBoIDMuMDQ3NDkxMSBhIDQuODg0MDY3LDQuODg0MDY3IDAgMCAwIDMuNDMyMTY4LC0xLjQyMzQ1OCBsIDcuMTExMzA5LC03LjExMTMxIGMgMS4yODU3NTQsLTEuMjg0MjU2IDMuNTI2NDY3LC0xLjI4NDI1NiA0LjgxMDcyNCwwIGwgNy4wODU4NjIsNy4wODQzNjcgYSA0Ljg4MjU3MDEsNC44ODI1NzAxIDAgMCAwIDMuNDMyMTcsMS40MjE5NjIgaCAyLjQ3MjcxOCBhIDEuMDMyNzkzOCwxLjAzMjc5MzggMCAwIDEgMC4zODYxNzQsMC4wNzc4MyBsIDUuNDM3ODg1LC01LjQzNzg4NSBhIDcuMTc1NjcxOCw3LjE3NTY3MTggMCAwIDAgMCwtMTAuMTQ5ODE4IiBmaWxsPSIjMzJCQ0FEIi8+PC9zdmc+' ), 'wc_pagarme_pix_payment' );
+		$this->icon = apply_filters( 'woocommerce_gateway_icon', \WC_PAGARME_PIX_PAYMENT_PLUGIN_URL . 'assets/images/pix-payment-icon-32x32.svg', 'polopagpayments' );
 		$this->expiration_days = (int) $this->get_option( 'expiration_days', 15 );
 		$this->expiration_hours = (int) $this->get_option( 'expiration_hours', 0 );
 		$this->after_paid_status = $this->get_option( 'after_paid_status', 'wc-processing' );
@@ -333,7 +333,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 	 */
 	protected function get_current_tab() {
 		$current_tab = filter_input( INPUT_GET, 'mgn_tab', FILTER_SANITIZE_STRING );
-		$current_tab = isset ( $current_tab ) ? $current_tab : 'general';
+		$current_tab = isset( $current_tab ) ? $current_tab : 'general';
 
 		return $current_tab;
 	}
