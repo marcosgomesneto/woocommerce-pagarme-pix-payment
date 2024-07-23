@@ -20,7 +20,9 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 
 	public $api;
 
-	public $aync;
+	public $async;
+
+	public $log;
 
 	public $api_version;
 

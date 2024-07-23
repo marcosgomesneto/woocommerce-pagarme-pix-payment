@@ -5,10 +5,11 @@ Tags: woocommerce, payment, pix, pagamento, pagarme
 Requires at least: 4.0
 Requires PHP: 7.0
 Tested up to: 6.5
-Stable tag: 2.1.4
+Stable tag: 2.1.7
 License: GPLv2 or later
 Language: pt_BR
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Pagamentos Pix com compensação automática, status do pedido é alterado automaticamente.
 
 == Pagamentos Pix com compensação automática, status do pedido é alterado automaticamente. ==
 
