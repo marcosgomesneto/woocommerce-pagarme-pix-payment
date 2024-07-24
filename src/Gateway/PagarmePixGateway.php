@@ -60,6 +60,8 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 
 	public $email_instruction;
 
+	public $page_refresh;
+
 
 	/**
 	 * Constructor for the gateway.
@@ -75,6 +77,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		$this->method_title = 'Pix';
 		$this->method_description = 'Pagamento via PIX processados pela Pagarme.';
 		$this->supports = array( 'products' );
+
 
 		// Method with all the options fields
 		$this->init_form_fields();
@@ -117,7 +120,6 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		add_action( 'woocommerce_order_details_before_order_table', array( $this, 'order_view_page' ) );
 		add_action( 'woocommerce_email_before_order_table', array( $this, 'email_instructions' ), 10, 3 );
 		add_action( 'woocommerce_api_' . $this->id, array( $this, 'ipn_handler' ) );
-		add_action( 'woocommerce_init', array( $this, 'init' ) );
 	}
 
 	/**
@@ -155,6 +157,15 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 				$update_settings['secret_key'] = $secret_key;
 				$update_settings['debug'] = isset( $debug ) ? 'yes' : 'no';
 				$update_settings['after_paid_status'] = $after_paid_status;
+
+				$this->api_key = $update_settings['api_key'];
+				$this->api_version = $update_settings['api_version'];
+				$this->title = $update_settings['title'];
+				$this->encryption_key = $update_settings['encryption_key'];
+				$this->secret_key = $update_settings['secret_key'];
+				$this->debug = $update_settings['debug'];
+				$this->after_paid_status = $update_settings['after_paid_status'];
+
 				break;
 			case 'customize':
 				$checkout_message = filter_input( INPUT_POST, $this->get_field_name( 'checkout_message' ) ); //Liberar HTML
@@ -172,7 +183,12 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 				$update_settings['thank_you_message'] = $thank_you_message;
 				$update_settings['pix_icon_color'] = $pix_icon_color;
 				$update_settings['pix_icon_size'] = $pix_icon_size;
-				$update_settings['pix_icon'] = 'data:image/svg+xml;base64, ' . base64_encode( preg_replace( '/#32BCAD/i', $pix_icon_color, '<svg viewBox="0 0 47.999999 47.999999" version="1.1" width="' . $pix_icon_size . '" height="' . $pix_icon_size . '" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><path d="m 37.212736,36.519836 a 6.8957697,6.8957697 0 0 1 -4.906519,-2.025174 l -7.087361,-7.09185 a 1.3471224,1.3471224 0 0 0 -1.862022,0 l -7.11131,7.111308 a 6.8987632,6.8987632 0 0 1 -4.906518,2.031162 H 9.9514702 l 8.9808148,8.980816 a 7.1846526,7.1846526 0 0 0 10.149819,0 l 8.998777,-9.000275 z" fill="#32BCAD"/><path d="m 11.340503,11.457373 a 6.8972665,6.8972665 0 0 1 4.906518,2.03116 l 7.11131,7.112807 a 1.318683,1.318683 0 0 0 1.862022,0 l 7.085864,-7.085865 a 6.8852919,6.8852919 0 0 1 4.906519,-2.032657 h 0.853176 L 29.067136,2.4840405 a 7.1756718,7.1756718 0 0 0 -10.149819,0 L 9.9514702,11.457373 Z" fill="#32BCAD"/><path d="M 45.509513,18.927915 40.071628,13.49003 a 1.0477618,1.0477618 0 0 1 -0.386174,0.07783 h -2.472718 a 4.8825701,4.8825701 0 0 0 -3.43217,1.421959 l -7.085862,7.081373 a 3.4037292,3.4037292 0 0 1 -4.809227,0 l -7.112806,-7.10831 A 4.8825701,4.8825701 0 0 0 11.340503,13.539424 H 8.3049864 a 1.0657234,1.0657234 0 0 1 -0.3652196,-0.07334 l -5.4723103,5.461833 a 7.1846526,7.1846526 0 0 0 0,10.149818 l 5.4603358,5.460331 a 1.0253097,1.0253097 0 0 1 0.3652196,-0.07335 h 3.0474911 a 4.884067,4.884067 0 0 0 3.432168,-1.423458 l 7.111309,-7.11131 c 1.285754,-1.284256 3.526467,-1.284256 4.810724,0 l 7.085862,7.084367 a 4.8825701,4.8825701 0 0 0 3.43217,1.421962 h 2.472718 a 1.0327938,1.0327938 0 0 1 0.386174,0.07783 l 5.437885,-5.437885 a 7.1756718,7.1756718 0 0 0 0,-10.149818" fill="#32BCAD"/></svg>' ) );
+
+				$this->checkout_message = $update_settings['checkout_message'];
+				$this->order_recived_message = $update_settings['order_recived_message'];
+				$this->thank_you_message = $update_settings['thank_you_message'];
+				$this->pix_icon_color = $update_settings['pix_icon_color'];
+				$this->pix_icon_size = $update_settings['pix_icon_size'];
 
 				break;
 			case 'email':
@@ -180,10 +196,14 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 				$email_instruction = preg_replace( '#<script(.*?)>(.*?)</script>#is', '', $email_instruction );
 				$email_instruction = preg_replace( '/”/', '"', $email_instruction );
 				$update_settings['email_instruction'] = $email_instruction;
+
+				$this->email_instruction = $update_settings['email_instruction'];
+
 				break;
 			case 'advanced':
 				$check_payment_interval = filter_input( INPUT_POST, $this->get_field_name( 'check_payment_interval' ), FILTER_SANITIZE_NUMBER_INT );
 				$auto_cancel = filter_input( INPUT_POST, $this->get_field_name( 'auto_cancel' ), FILTER_SANITIZE_STRING );
+				$page_refresh = filter_input( INPUT_POST, $this->get_field_name( 'page_refresh' ), FILTER_SANITIZE_STRING );
 				$apply_discount = filter_input( INPUT_POST, $this->get_field_name( 'apply_discount' ), FILTER_SANITIZE_STRING );
 				$apply_discount_amount = filter_input( INPUT_POST, $this->get_field_name( 'apply_discount_amount' ), FILTER_UNSAFE_RAW );
 				$apply_discount_type = filter_input( INPUT_POST, $this->get_field_name( 'apply_discount_type' ), FILTER_UNSAFE_RAW );
@@ -240,15 +260,28 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 
 				$update_settings['check_payment_interval'] = $check_payment_interval;
 				$update_settings['auto_cancel'] = isset( $auto_cancel ) ? 'yes' : 'no';
+				$update_settings['page_refresh'] = isset( $page_refresh ) ? 'yes' : 'no';
 				$update_settings['apply_discount'] = isset( $apply_discount ) ? 'yes' : 'no';
 				$update_settings['apply_discount_amount'] = $apply_discount_amount;
 				$update_settings['apply_discount_type'] = $apply_discount_type;
 				$update_settings['expiration_days'] = $expiration_days;
 				$update_settings['expiration_hours'] = $expiration_hours;
+
+				$this->auto_cancel = $update_settings['auto_cancel'];
+				$this->check_payment_interval = $update_settings['check_payment_interval'];
+				$this->page_refresh = $update_settings['page_refresh'];
+				$this->apply_discount = $update_settings['apply_discount'];
+				$this->apply_discount_amount = $update_settings['apply_discount_amount'];
+				$this->apply_discount_type = $update_settings['apply_discount_type'];
+				$this->expiration_days = $update_settings['expiration_days'];
+				$this->expiration_hours = $update_settings['expiration_hours'];
+
 				break;
 		}
 
-		return update_option( $this->get_option_key(), apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $update_settings ), 'yes' );
+		update_option( $this->get_option_key(), apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $update_settings ) );
+		$this->init_settings();
+		$this->setup_settings();
 	}
 
 	/**
@@ -353,6 +386,7 @@ class PagarmePixGateway extends WC_Payment_Gateway {
 		$this->read_notice = $this->get_option( 'read_notice', false );
 		$this->check_payment_interval = $this->get_option( 'check_payment_interval', '5' );
 		$this->auto_cancel = $this->get_option( 'auto_cancel', 'no' );
+		$this->page_refresh = $this->get_option( 'page_refresh', 'no' );
 		$this->apply_discount = $this->get_option( 'apply_discount', 'no' );
 		$this->apply_discount_type = $this->get_option( 'apply_discount_type', 'fixed' );
 		$this->apply_discount_amount = $this->get_option( 'apply_discount_amount', '0' );

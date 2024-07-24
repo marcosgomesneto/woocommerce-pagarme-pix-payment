@@ -37,10 +37,8 @@ defined( 'ABSPATH' ) || exit;
 			</th>
 			<td class="forminp">
 				<fieldset>
-					<svg viewBox="0 0 47.999999 47.999999" id="imagePixSvg" version="1.1"
-						width="<?php echo esc_html( $this->pix_icon_size ); ?>"
-						height="<?php echo esc_html( $this->pix_icon_size ); ?>" xmlns="http://www.w3.org/2000/svg"
-						xmlns:svg="http://www.w3.org/2000/svg">
+					<svg viewBox="0 0 47.999999 47.999999" id="imagePixSvg" version="1.1" width="42" height="42"
+						xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
 						<path
 							d="m 37.212736,36.519836 a 6.8957697,6.8957697 0 0 1 -4.906519,-2.025174 l -7.087361,-7.09185 a 1.3471224,1.3471224 0 0 0 -1.862022,0 l -7.11131,7.111308 a 6.8987632,6.8987632 0 0 1 -4.906518,2.031162 H 9.9514702 l 8.9808148,8.980816 a 7.1846526,7.1846526 0 0 0 10.149819,0 l 8.998777,-9.000275 z"
 							fill="<?php echo esc_html( $this->pix_icon_color ); ?>" class="pppix-c1" />

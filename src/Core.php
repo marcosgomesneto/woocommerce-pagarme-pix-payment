@@ -113,12 +113,16 @@ class Core {
 	public function head() {
 		if ( $this->is_pix_payment_page() ) {
 			$interval = 5;
+			$reload = false;
 			$plugin_options = maybe_unserialize( get_option( 'woocommerce_wc_pagarme_pix_payment_geteway_settings', false ) );
 
-			if ( $plugin_options && isset ( $plugin_options['check_payment_interval'] ) )
+			if ( $plugin_options && isset( $plugin_options['check_payment_interval'] ) )
 				$interval = $plugin_options['check_payment_interval'];
 
-			printf( "<script>window.wc_pagarme_pix_payment_geteway = {'checkInterval': %d};</script>", $interval * 1000 );
+			if ( $plugin_options && isset( $plugin_options['page_refresh'] ) )
+				$reload = $plugin_options['page_refresh'] == 'yes' ? 'true' : 'false';
+
+			printf( "<script>window.wc_pagarme_pix_payment_geteway = {'checkInterval': %d, 'reload': %s};</script>", $interval * 1000, $reload );
 		}
 	}
 
@@ -126,14 +130,14 @@ class Core {
 		global $wp;
 
 		//Page is view order or order received?
-		if ( ! is_wc_endpoint_url( 'order-received' ) && ! isset ( $wp->query_vars['view-order'] ) )
+		if ( ! is_wc_endpoint_url( 'order-received' ) && ! isset( $wp->query_vars['view-order'] ) )
 			return false;
 
-		$query_var = isset ( $wp->query_vars['order-received'] ) ? $wp->query_vars['order-received'] : $wp->query_vars['view-order'];
+		$query_var = isset( $wp->query_vars['order-received'] ) ? $wp->query_vars['order-received'] : $wp->query_vars['view-order'];
 
 		$order_id = absint( $query_var );
 
-		if ( empty ( $order_id ) || $order_id == 0 )
+		if ( empty( $order_id ) || $order_id == 0 )
 			return false;
 
 		$order = wc_get_order( $order_id );
@@ -189,7 +193,7 @@ class Core {
 	}
 
 	public function admin_enqueue_scripts( $hook ) {
-		if ( $hook != 'woocommerce_page_wc-settings' || ! ( isset ( $_GET['section'] ) && $_GET['section'] == 'wc_pagarme_pix_payment_geteway' ) )
+		if ( $hook != 'woocommerce_page_wc-settings' || ! ( isset( $_GET['section'] ) && $_GET['section'] == 'wc_pagarme_pix_payment_geteway' ) )
 			return;
 
 		wp_enqueue_script(

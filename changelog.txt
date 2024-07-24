@@ -1,5 +1,10 @@
 == Changelog ==
 
+= 2.1.8 =
+
+* Salvamento dos campos de configuração (Fixado)
+* Adicionado opção avançada "Recarregar página após pagamento confirmado"
+
 = 2.1.3 =
 
 * V4 Fix Fingerprint
