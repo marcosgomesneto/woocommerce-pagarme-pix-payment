@@ -113,7 +113,7 @@ class Core {
 	public function head() {
 		if ( $this->is_pix_payment_page() ) {
 			$interval = 5;
-			$reload = false;
+			$reload = 'false';
 			$plugin_options = maybe_unserialize( get_option( 'woocommerce_wc_pagarme_pix_payment_geteway_settings', false ) );
 
 			if ( $plugin_options && isset( $plugin_options['check_payment_interval'] ) )

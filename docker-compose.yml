@@ -1,13 +1,5 @@
 version: "3.1"
 services:
-  phpmyadmin:
-    image: phpmyadmin
-    container_name: phpmyadmin
-    ports:
-      - 8081:80
-    environment:
-      PMA_ARBITRARY: 1
-      PMA_HOST: db-iabets-prd-cluster.coel50q1pqpk.us-east-1.rds.amazonaws.com
   wordpress:
     build: .
     restart: always
@@ -32,6 +24,7 @@ services:
       - C:/Dev/Coding/plugins-de-terceiros/learndash/sfwd-lms:/var/www/html/wp-content/plugins/sfwd-lms
       - C:/Dev/Coding/plugins-de-terceiros/learndash-woocommerce/learndash-woocommerce:/var/www/html/wp-content/plugins/learndash-woocommerce
       - C:/Dev/Projects/Other Clients/intensivacursos/woocommerce-pagarme-3.0.0/woocommerce-pagarme:/var/www/html/wp-content/plugins/woocommerce-pagarme
+      - C:/Dev/Coding/wordpress-plugins/woocommerce-correios.4.2.5/woocommerce-correios:/var/www/html/wp-content/plugins/woocommerce-correios
   db:
     image: mysql:5.7
     restart: always
