@@ -208,7 +208,9 @@ class PagarmeApiV5 extends PagarmeApi {
 			$this->process_order_status( $order, $transaction['status'] );
 
 			// Empty the cart.
-			WC()->cart->empty_cart();
+			if ( method_exists( WC()->cart, 'empty_cart' ) ) {
+				WC()->cart->empty_cart();
+			}
 
 			// Redirect to thanks page.
 			return array(
