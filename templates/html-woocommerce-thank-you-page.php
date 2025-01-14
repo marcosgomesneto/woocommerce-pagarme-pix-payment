@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @var \WC_Order $order
  */
@@ -21,7 +22,63 @@ $copy_button_html = ob_get_clean();
 
 ob_start();
 ?>
-<img src="<?php echo $qr_code_image; ?>" />
+<div id="qr-code-container" style="text-align: center;">
+    <div id="qr-code-loader" style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
+        <svg id="spinner" width="50" height="50" viewBox="0 0 50 50" style="margin-bottom: 10px;">
+            <circle cx="25" cy="25" r="20" stroke="#000" stroke-width="5" fill="none" />
+        </svg>
+        Carregando QR Code...
+    </div>
+    <img id="qr-code-image" src="" alt="QR Code" style="display:none;" />
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const qrCodeImage = document.getElementById("qr-code-image");
+        const loader = document.getElementById("qr-code-loader");
+        const qrCodeUrl = "<?php echo esc_js($qr_code_image); ?>";
+        const maxAttempts = 5;
+        let attemptCount = 0;
+
+        console.log("QR Code URL: " + qrCodeUrl);
+
+        function checkImage(url, callback) {
+            const img = new Image();
+            img.onload = () => {
+                console.log("QR Code image loaded successfully.");
+                callback(true);
+            };
+            img.onerror = () => {
+                console.log("Failed to load QR Code image.");
+                callback(false);
+            };
+            img.src = url;
+        }
+
+        function loadQrCode() {
+            if (attemptCount >= maxAttempts) {
+                console.log("Max attempts reached. QR Code image could not be loaded.");
+                loader.innerText = "Falha ao carregar o QR Code. Por favor, tente novamente mais tarde.";
+                return;
+            }
+
+            console.log("Attempting to load QR Code image... Attempt #" + (attemptCount + 1));
+            checkImage(qrCodeUrl, function(isAvailable) {
+                if (isAvailable) {
+                    qrCodeImage.src = qrCodeUrl;
+                    qrCodeImage.style.display = "block";
+                    loader.style.display = "none";
+                    console.log("QR Code image displayed.");
+                } else {
+                    console.log("QR Code image not available, retrying in 2 seconds...");
+                    attemptCount++;
+                    setTimeout(loadQrCode, 2000); // Tenta novamente após 2 segundos
+                }
+            });
+        }
+
+        loadQrCode();
+    });
+</script>
 <?php
 $qr_code_html = ob_get_clean();
 
@@ -144,6 +201,16 @@ $qr_code_html = ob_get_clean();
         }
     }
 
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
     #successAnimationCircle {
         stroke-dasharray: 151px 151px;
         stroke: #007bff;
@@ -177,6 +244,11 @@ $qr_code_html = ob_get_clean();
     #successAnimation.animated #successAnimationResult {
         -webkit-animation: 0.3s linear 0.9s both fadeIn;
         animation: 0.3s linear 0.9s both fadeIn;
+    }
+
+    #spinner {
+        -webkit-animation: spin 1s linear infinite;
+        animation: spin 1s linear infinite;
     }
 </style>
 <div class="text-center">
