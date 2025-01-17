@@ -29,7 +29,7 @@ ob_start();
         </svg>
         Carregando QR Code...
     </div>
-    <img id="qr-code-image" src="" alt="QR Code" style="display:none;" />
+    <img id="qr-code-image" src="<?php echo $qr_code_image ?>" alt="QR Code" style="display:none;" />
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
